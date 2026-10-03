@@ -63,11 +63,14 @@ const EXPERIENCE_LABELS = {
 //   place:     where to keep it, for people who said "keep it in my space"
 //   tip:       one thing to do this week
 //   notice:    what to look for by the end of the week
-//   care:      crystal-specific care
+//   care:      crystal-specific care. Water only for the quartz family
+//              (Kristen never recommends water for anything else).
+//   keywords:  three-word association, also shown on the result page
 // ---------------------------------------------------------------------
 const CRYSTAL_EMAIL = {
   amethyst: {
     name: "Amethyst",
+    keywords: "Calm · Sleep · Intuition",
     theme: "calm_clarity",
     shopUrl: "https://www.mooncatcrystals.com/collections/amethyst-collection",
     situation: "your mind won't slow down, even when you're exhausted",
@@ -76,10 +79,11 @@ const CRYSTAL_EMAIL = {
     place: "on your nightstand or wherever you wind down",
     tip: "When your thoughts start racing, hold it and take three slow breaths before you do anything else.",
     notice: "notice whether it's getting easier to switch off at night.",
-    care: "Keep Amethyst out of direct sunlight, since its purple can fade over time. A rinse under water or a night on a selenite plate is all it needs to reset."
+    care: "Keep Amethyst out of direct sunlight, since its purple can fade over time. It's part of the quartz family, so a quick rinse under water is fine, or you can reset it on a selenite plate."
   },
   selenite: {
     name: "Selenite",
+    keywords: "Cleansing · Clarity · Peace",
     theme: "calm_clarity",
     shopUrl: "https://www.mooncatcrystals.com/collections/selenite",
     situation: "your space or your energy feels heavy and cluttered",
@@ -88,10 +92,11 @@ const CRYSTAL_EMAIL = {
     place: "near your front door or in the room that feels most cluttered",
     tip: "Once this week, set your other crystals on it overnight to reset them.",
     notice: "notice how the space feels when you walk in.",
-    care: "Keep Selenite dry. It's soft and water damages it, so never rinse or soak it; wipe off dust with a dry cloth. It doesn't need cleansing itself, since it's what people use to cleanse their other crystals."
+    care: "Keep Selenite completely dry. It's very soft and water damages it, so never rinse or soak it; just dust it with a dry cloth. It scratches easily too, so handle it gently."
   },
   clear_quartz: {
     name: "Clear Quartz",
+    keywords: "Amplifying · Focus · Intention",
     theme: "calm_clarity",
     shopUrl: "https://www.mooncatcrystals.com/collections/quartz-1",
     situation: "you want one crystal that amplifies everything else you're doing",
@@ -100,10 +105,11 @@ const CRYSTAL_EMAIL = {
     place: "on your desk or wherever you plan your day",
     tip: "Write down one intention, set the quartz on top of it, and leave it there all week.",
     notice: "check in on that intention and see what moved.",
-    care: "Clear Quartz is hard and easy to care for. Rinse it under water, or reset it on a selenite plate or in moonlight."
+    care: "Clear Quartz is easy to care for. It's part of the quartz family, so a quick rinse under water is fine, or you can reset it on a selenite plate or in moonlight."
   },
   fluorite: {
     name: "Fluorite",
+    keywords: "Focus · Clarity · Organization",
     theme: "calm_clarity",
     shopUrl: "https://www.mooncatcrystals.com/collections/fluorite",
     situation: "you have too much going on and can't focus on any of it",
@@ -112,10 +118,11 @@ const CRYSTAL_EMAIL = {
     place: "on your desk or wherever you work and plan",
     tip: "Before you start a task, hold it for a minute and pick the one thing you're doing first.",
     notice: "look at what you actually finished.",
-    care: "Fluorite is soft and can chip or fade, so keep it out of direct sun and away from water. Reset it on a selenite plate instead of rinsing it."
+    care: "Fluorite is soft and chips easily, and its color can fade in direct sun. Keep it dry and out of sunlight, and reset it on a selenite plate."
   },
   citrine: {
     name: "Citrine",
+    keywords: "Abundance · Confidence · Optimism",
     theme: "confidence_abundance",
     shopUrl: "https://www.mooncatcrystals.com/collections/citrine",
     situation: "you're working toward more money or a bigger goal",
@@ -124,10 +131,11 @@ const CRYSTAL_EMAIL = {
     place: "on your desk, near where you work on money or goals",
     tip: "Write down the bigger thing you want to go after and keep the citrine with it.",
     notice: "notice one step you took toward it that you'd normally have put off.",
-    care: "Keep Citrine out of strong direct sunlight to protect its color. A quick rinse or a night on a selenite plate resets it."
+    care: "Keep Citrine out of strong direct sunlight to protect its color. It's part of the quartz family, so a quick rinse under water is fine, or you can reset it on a selenite plate."
   },
   pyrite: {
     name: "Pyrite",
+    keywords: "Abundance · Protection · Willpower",
     theme: "confidence_abundance",
     shopUrl: "https://www.mooncatcrystals.com/collections/pyrite",
     situation: "you're building a business or a big goal, and you're taking it seriously",
@@ -136,10 +144,11 @@ const CRYSTAL_EMAIL = {
     place: "on your desk or wherever money and business conversations happen",
     tip: "Keep it in sight while you work on the thing you're building.",
     notice: "note one thing you protected this week: your time, your prices, or your focus.",
-    care: "Keep Pyrite dry. Water and humidity can make it rust or tarnish, so reset it on a selenite plate instead of rinsing it."
+    care: "Keep Pyrite dry. Water and humidity can make it rust or tarnish, so reset it on a selenite plate instead."
   },
   tigers_eye: {
     name: "Tiger's Eye",
+    keywords: "Confidence · Courage · Follow-through",
     theme: "confidence_abundance",
     shopUrl: "https://www.mooncatcrystals.com/collections/tigers-eye",
     situation: "you're in the middle of something long-term and need to stay disciplined",
@@ -148,10 +157,11 @@ const CRYSTAL_EMAIL = {
     place: "wherever you work on your long-term goal",
     tip: "Hold it at the start of each work session and commit to showing up for just that one session.",
     notice: "count how many days you showed up.",
-    care: "Tiger's Eye is durable. Rinse it under water and dry it right away, or reset it on a selenite plate."
+    care: "Tiger's Eye is part of the quartz family, so a quick rinse under water is fine as long as you dry it right away. You can also reset it on a selenite plate."
   },
   carnelian: {
     name: "Carnelian",
+    keywords: "Motivation · Courage · Creativity",
     theme: "motivation_action",
     shopUrl: "https://www.mooncatcrystals.com/collections/carnelian",
     situation: "you need courage to take the next step",
@@ -160,10 +170,11 @@ const CRYSTAL_EMAIL = {
     place: "somewhere you'll see it first thing in the morning",
     tip: "Each morning, pick one small thing you've been putting off and do it before lunch.",
     notice: "notice how many of those small things actually got done.",
-    care: "Carnelian is durable and easy to keep. Rinse it under water, or set it in the sun for a little while to reset it."
+    care: "Carnelian is part of the quartz family, so a quick rinse under water is fine. You can also reset it on a selenite plate."
   },
   black_tourmaline: {
     name: "Black Tourmaline",
+    keywords: "Protection · Grounding · Boundaries",
     theme: "protection_boundaries",
     shopUrl: "https://www.mooncatcrystals.com/collections/black-tourmaline",
     situation: "you keep giving your energy to people and things that drain you",
@@ -172,10 +183,11 @@ const CRYSTAL_EMAIL = {
     place: "by your front door or on your desk, wherever the draining stuff tends to land",
     tip: "When you notice you've picked up someone else's mood, look at it and ask yourself whether the feeling is actually yours.",
     notice: "notice which days felt lighter.",
-    care: "Black Tourmaline is tough and easy to keep. Rinse it under water or set it on a selenite plate to reset it. Raw pieces can shed small splinters, so keep them somewhere they won't get knocked around."
+    care: "Black Tourmaline is more delicate than it looks. It can split and shed splinters along its lines, especially raw pieces, so handle it gently and keep it where it won't get knocked around. Keep it dry and reset it on a selenite plate."
   },
   smoky_quartz: {
     name: "Smoky Quartz",
+    keywords: "Grounding · Release · Protection",
     theme: "protection_boundaries",
     shopUrl: "https://www.mooncatcrystals.com/collections/smoky-quartz",
     situation: "everything feels heavy and you need to release something",
@@ -184,10 +196,11 @@ const CRYSTAL_EMAIL = {
     place: "somewhere quiet where you can sit with it for a minute",
     tip: "Hold it and name, out loud or on paper, one thing you're ready to stop carrying.",
     notice: "notice whether that thing takes up less room in your head.",
-    care: "Keep Smoky Quartz out of strong sunlight, which can lighten it over time. Rinse it under water or reset it on a selenite plate."
+    care: "Keep Smoky Quartz out of strong sunlight, which can lighten its color over time. It's part of the quartz family, so a quick rinse under water is fine, or you can reset it on a selenite plate."
   },
   obsidian: {
     name: "Obsidian",
+    keywords: "Protection · Truth · Grounding",
     theme: "protection_boundaries",
     shopUrl: "https://www.mooncatcrystals.com/collections/obsidian",
     situation: "there's something you keep avoiding that you know you need to face",
@@ -196,10 +209,11 @@ const CRYSTAL_EMAIL = {
     place: "by your bed or your front door",
     tip: "Hold it while you journal for five minutes about the thing you've been putting off.",
     notice: "decide on one small step toward facing it.",
-    care: "Obsidian is glass, so it can chip if it's dropped, and raw pieces can have sharp edges. Rinse it under water and dry it, or reset it on a selenite plate."
+    care: "Obsidian is volcanic glass, so it can chip if it's dropped, and raw pieces can have sharp edges. Keep it dry and reset it on a selenite plate."
   },
   rose_quartz: {
     name: "Rose Quartz",
+    keywords: "Self-love · Compassion · Gentleness",
     theme: "heart_self_love",
     shopUrl: "https://www.mooncatcrystals.com/collections/rose-quartz",
     situation: "you're working on loving yourself again",
@@ -208,10 +222,11 @@ const CRYSTAL_EMAIL = {
     place: "by your mirror or on your nightstand",
     tip: "Each time you catch yourself being hard on yourself, look at it and say the kinder version instead.",
     notice: "notice whether that voice in your head sounds any different.",
-    care: "Keep Rose Quartz out of direct sunlight, since its pink can fade. Rinse it under water or reset it on a selenite plate."
+    care: "Keep Rose Quartz out of direct sunlight, since its pink can fade. It's part of the quartz family, so a quick rinse under water is fine, or you can reset it on a selenite plate."
   },
   moonstone: {
     name: "Moonstone",
+    keywords: "New beginnings · Intuition · Balance",
     theme: "intuition_transformation",
     shopUrl: "https://www.mooncatcrystals.com/collections/moonstone",
     situation: "you're in a big transition and want to trust the process",
@@ -220,10 +235,11 @@ const CRYSTAL_EMAIL = {
     place: "on your nightstand or near a window where it catches the light",
     tip: "When things feel uncertain, hold it and remind yourself that this is a phase, not forever.",
     notice: "notice what's felt steadier.",
-    care: "Moonstone is fairly soft, so store it apart from harder crystals to avoid scratches. Reset it in moonlight or on a selenite plate, and skip long soaks."
+    care: "Moonstone is fairly soft, so store it apart from harder crystals to avoid scratches. Keep it dry and reset it in moonlight or on a selenite plate."
   },
   labradorite: {
     name: "Labradorite",
+    keywords: "Intuition · Transformation · Protection",
     theme: "intuition_transformation",
     shopUrl: "https://www.mooncatcrystals.com/collections/labradorite",
     situation: "you're starting something new and want to trust your intuition",
@@ -232,10 +248,11 @@ const CRYSTAL_EMAIL = {
     place: "where you'll see it when you start your day",
     tip: "Before a decision, hold it for a moment and notice your first gut answer before you talk yourself out of it.",
     notice: "look back at which gut answers turned out right.",
-    care: "Store Labradorite where it won't get scratched, since scratches dull its flash. Wipe it with a soft cloth, reset it on a selenite plate, and skip long soaks."
+    care: "Labradorite scratches more easily than it looks, and scratches dull its flash, so store it on its own. Keep it dry, wipe it with a soft cloth, and reset it on a selenite plate."
   },
   malachite: {
     name: "Malachite",
+    keywords: "Transformation · Growth · Protection",
     theme: "intuition_transformation",
     shopUrl: "https://www.mooncatcrystals.com/collections/malachite",
     situation: "you're done managing the same pattern and want it gone for good",
@@ -334,6 +351,7 @@ export async function onRequestPost(context) {
     // @ personalization menu.
     custom_fields: {
       crystalMatch: crystal.name,
+      crystalKeywords: crystal.keywords,
       crystalTheme: THEME_NAMES[crystal.theme],
       crystalExperienceLevel: experienceLevel,
       crystalWhy: whyText(crystal, payload.situationKey, payload.needKey),

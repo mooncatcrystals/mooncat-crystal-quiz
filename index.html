@@ -218,6 +218,7 @@
   #screen-result .result-eyebrow, #screen-signup .result-eyebrow { text-align: center; font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--purple); font-weight: 700; margin-bottom: 10px; }
   #screen-result h2 { text-align: center; font-size: 34px; margin-bottom: 4px; }
   #screen-result .subtitle { text-align: center; color: var(--text-soft); font-size: 14px; font-style: italic; margin-bottom: 22px; font-family: 'Merriweather', Georgia, serif; }
+  #screen-result .keywords { text-align: center; font-size: 12.5px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--purple); font-weight: 700; margin: -12px 0 22px; }
   #screen-result .hook {
     font-family: 'Merriweather', Georgia, serif;
     font-size: 19px;
@@ -338,6 +339,7 @@
       <div class="result-eyebrow">Your Crystal Match</div>
       <h2 id="result-name"></h2>
       <div class="subtitle" id="result-tagline"></div>
+      <div class="keywords" id="result-keywords"></div>
       <p class="hook" id="result-hook"></p>
       <div class="why" id="result-why"></div>
 
@@ -385,6 +387,7 @@
   var CRYSTALS = {
     rose_quartz: {
       name: "Rose Quartz",
+      keywords: "Self-love · Compassion · Gentleness",
       tagline: "The Heart Thaw",
       theme: "heart_self_love",
       hook: "You're not too much. You're not too sensitive. You're just tired of armoring up.",
@@ -394,6 +397,7 @@
     },
     amethyst: {
       name: "Amethyst",
+      keywords: "Calm · Sleep · Intuition",
       tagline: "The Exhale",
       theme: "calm_clarity",
       hook: "Your mind hasn't stopped racing in days. Maybe weeks.",
@@ -403,6 +407,7 @@
     },
     citrine: {
       name: "Citrine",
+      keywords: "Abundance · Confidence · Optimism",
       tagline: "The Ignition",
       theme: "confidence_abundance",
       hook: "You can feel it — you're standing right at the edge of something bigger.",
@@ -412,6 +417,7 @@
     },
     black_tourmaline: {
       name: "Black Tourmaline",
+      keywords: "Protection · Grounding · Boundaries",
       tagline: "The Line You Draw",
       theme: "protection_boundaries",
       hook: "You already know what's been draining your energy. You're just ready to stop absorbing it.",
@@ -421,6 +427,7 @@
     },
     selenite: {
       name: "Selenite",
+      keywords: "Cleansing · Clarity · Peace",
       tagline: "The Reset",
       theme: "calm_clarity",
       hook: "Everything feels heavy and you can't even point to why.",
@@ -430,6 +437,7 @@
     },
     carnelian: {
       name: "Carnelian",
+      keywords: "Motivation · Courage · Creativity",
       tagline: "The Match Strike",
       theme: "motivation_action",
       hook: "You know exactly what you want to do. You just haven't done it yet.",
@@ -439,6 +447,7 @@
     },
     moonstone: {
       name: "Moonstone",
+      keywords: "New beginnings · Intuition · Balance",
       tagline: "The In-Between",
       theme: "intuition_transformation",
       hook: "You're not who you were, and you're not sure who you're becoming yet — and that's the whole point.",
@@ -448,6 +457,7 @@
     },
     labradorite: {
       name: "Labradorite",
+      keywords: "Intuition · Transformation · Protection",
       tagline: "The Threshold",
       theme: "intuition_transformation",
       hook: "You're stepping through a door and there's no going back to who you were before it.",
@@ -457,6 +467,7 @@
     },
     clear_quartz: {
       name: "Clear Quartz",
+      keywords: "Amplifying · Focus · Intention",
       tagline: "The Amplifier",
       theme: "calm_clarity",
       hook: "You don't need a new crystal. You need the one that makes everything else work harder.",
@@ -466,6 +477,7 @@
     },
     tigers_eye: {
       name: "Tiger's Eye",
+      keywords: "Confidence · Courage · Follow-through",
       tagline: "The Follow-Through",
       theme: "confidence_abundance",
       hook: "Starting was never your problem. Finishing is.",
@@ -475,6 +487,7 @@
     },
     smoky_quartz: {
       name: "Smoky Quartz",
+      keywords: "Grounding · Release · Protection",
       tagline: "The Release",
       theme: "protection_boundaries",
       hook: "You've been carrying something heavy for way longer than you should have.",
@@ -484,6 +497,7 @@
     },
     fluorite: {
       name: "Fluorite",
+      keywords: "Focus · Clarity · Organization",
       tagline: "The Focus",
       theme: "calm_clarity",
       hook: "You don't need more ideas. You need a way to sort the ones you have.",
@@ -493,6 +507,7 @@
     },
     obsidian: {
       name: "Obsidian",
+      keywords: "Protection · Truth · Grounding",
       tagline: "The Mirror",
       theme: "protection_boundaries",
       hook: "You'd rather see things as they are than keep guessing.",
@@ -502,6 +517,7 @@
     },
     malachite: {
       name: "Malachite",
+      keywords: "Transformation · Growth · Protection",
       tagline: "The Deep Shift",
       theme: "intuition_transformation",
       hook: "You're not interested in a small fix. You want the pattern gone for good.",
@@ -511,6 +527,7 @@
     },
     pyrite: {
       name: "Pyrite",
+      keywords: "Abundance · Protection · Willpower",
       tagline: "The Fortress",
       theme: "confidence_abundance",
       hook: "You're building something real, and you're done letting anything get in its way.",
@@ -910,6 +927,7 @@
     var result = CRYSTALS[state.resultKey];
     document.getElementById("result-name").textContent = result.name;
     document.getElementById("result-tagline").textContent = result.tagline;
+    document.getElementById("result-keywords").textContent = result.keywords;
     document.getElementById("result-hook").textContent = result.hook;
     document.getElementById("result-why").textContent = result.why;
     document.getElementById("result-how").textContent = result.how;
