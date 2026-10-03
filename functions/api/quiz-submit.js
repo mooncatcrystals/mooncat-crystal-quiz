@@ -66,7 +66,8 @@ const EXPERIENCE_LABELS = {
 //   care:      crystal-specific care. Water is ONLY for washing off dust, and
 //              only for quartz-family stones; never as a way to cleanse
 //              (Kristen doesn't support that). Cleansing = selenite plate,
-//              moonlight, sound or smoke.
+//              sound, smoke or intention. Moonlight is for charging, not
+//              cleansing.
 //   keywords:  three-word association, also shown on the result page
 // ---------------------------------------------------------------------
 const CRYSTAL_EMAIL = {
@@ -81,7 +82,7 @@ const CRYSTAL_EMAIL = {
     place: "on your nightstand or wherever you wind down",
     tip: "When your thoughts start racing, hold it and take three slow breaths before you do anything else.",
     notice: "notice whether it's getting easier to switch off at night.",
-    care: "Keep Amethyst out of direct sunlight, since its purple can fade over time. If it gets dusty, a quick rinse under cool water is fine. To cleanse it, set it on a selenite plate or in moonlight."
+    care: "Keep Amethyst out of direct sunlight, since its purple can fade over time. If it gets dusty, a quick rinse under cool water is fine. To cleanse it, set it on a selenite plate or use sound or smoke."
   },
   selenite: {
     name: "Selenite",
@@ -94,7 +95,7 @@ const CRYSTAL_EMAIL = {
     place: "near your front door or in the room that feels most cluttered",
     tip: "Once this week, set your other crystals on it overnight to cleanse them.",
     notice: "notice how the space feels when you walk in.",
-    care: "Keep Selenite completely dry. It's very soft and water damages it, so never rinse or soak it; just dust it with a dry cloth. To cleanse it, use moonlight or sound, like a singing bowl."
+    care: "Keep Selenite completely dry. It's very soft and water damages it, so never rinse or soak it; just dust it with a dry cloth. To cleanse it, use sound, like a singing bowl, or smoke."
   },
   clear_quartz: {
     name: "Clear Quartz",
@@ -107,7 +108,7 @@ const CRYSTAL_EMAIL = {
     place: "on your desk or wherever you plan your day",
     tip: "Write down one intention, set the quartz on top of it, and leave it there all week.",
     notice: "check in on that intention and see what moved.",
-    care: "Clear Quartz is easy to care for. If it gets dusty, a quick rinse under cool water is fine. Keep spheres out of sunny windows, since they can focus light. To cleanse it, use a selenite plate or moonlight."
+    care: "Clear Quartz is easy to care for. If it gets dusty, a quick rinse under cool water is fine. Keep spheres out of sunny windows, since they can focus light. To cleanse it, use a selenite plate, sound or smoke."
   },
   fluorite: {
     name: "Fluorite",
@@ -133,7 +134,7 @@ const CRYSTAL_EMAIL = {
     place: "on your desk, near where you work on money or goals",
     tip: "Write down the bigger thing you want to go after and keep the citrine with it.",
     notice: "notice one step you took toward it that you'd normally have put off.",
-    care: "Keep Citrine out of strong direct sunlight to protect its color. If it gets dusty, a quick rinse under cool water is fine. To cleanse it, set it on a selenite plate or in moonlight."
+    care: "Keep Citrine out of strong direct sunlight to protect its color. If it gets dusty, a quick rinse under cool water is fine. To cleanse it, set it on a selenite plate or use sound or smoke."
   },
   pyrite: {
     name: "Pyrite",
@@ -159,7 +160,7 @@ const CRYSTAL_EMAIL = {
     place: "wherever you work on your long-term goal",
     tip: "Hold it at the start of each work session and commit to showing up for just that one session.",
     notice: "count how many days you showed up.",
-    care: "Tiger's Eye is durable. If it gets dusty, a quick rinse under cool water is fine; dry it right away. To cleanse it, set it on a selenite plate or in moonlight."
+    care: "Tiger's Eye is durable. If it gets dusty, a quick rinse under cool water is fine; dry it right away. To cleanse it, set it on a selenite plate or use sound or smoke."
   },
   carnelian: {
     name: "Carnelian",
@@ -172,7 +173,7 @@ const CRYSTAL_EMAIL = {
     place: "somewhere you'll see it first thing in the morning",
     tip: "Each morning, pick one small thing you've been putting off and do it before lunch.",
     notice: "notice how many of those small things actually got done.",
-    care: "Carnelian is durable and easy to keep. If it gets dusty, a quick rinse under cool water is fine. To cleanse it, set it on a selenite plate or in moonlight."
+    care: "Carnelian is durable and easy to keep. If it gets dusty, a quick rinse under cool water is fine. To cleanse it, set it on a selenite plate or use sound or smoke."
   },
   black_tourmaline: {
     name: "Black Tourmaline",
@@ -198,7 +199,7 @@ const CRYSTAL_EMAIL = {
     place: "somewhere quiet where you can sit with it for a minute",
     tip: "Hold it and name, out loud or on paper, one thing you're ready to stop carrying.",
     notice: "notice whether that thing takes up less room in your head.",
-    care: "Keep Smoky Quartz out of strong sunlight, which can lighten its color over time. If it gets dusty, a quick rinse under cool water is fine. To cleanse it, use a selenite plate or moonlight."
+    care: "Keep Smoky Quartz out of strong sunlight, which can lighten its color over time. If it gets dusty, a quick rinse under cool water is fine. To cleanse it, use a selenite plate, sound or smoke."
   },
   obsidian: {
     name: "Obsidian",
@@ -211,7 +212,7 @@ const CRYSTAL_EMAIL = {
     place: "by your bed or your front door",
     tip: "Hold it while you journal for five minutes about the thing you've been putting off.",
     notice: "decide on one small step toward facing it.",
-    care: "Obsidian is volcanic glass, so it can chip if it's dropped, and raw pieces can have sharp edges. Keep it dry. To cleanse it, set it on a selenite plate or in moonlight."
+    care: "Obsidian is volcanic glass, so it can chip if it's dropped, and raw pieces can have sharp edges. Keep it dry. To cleanse it, set it on a selenite plate or use sound or smoke."
   },
   rose_quartz: {
     name: "Rose Quartz",
@@ -224,7 +225,7 @@ const CRYSTAL_EMAIL = {
     place: "by your mirror or on your nightstand",
     tip: "Each time you catch yourself being hard on yourself, look at it and say the kinder version instead.",
     notice: "notice whether that voice in your head sounds any different.",
-    care: "Keep Rose Quartz out of direct sunlight, since its pink can fade. If it gets dusty, a quick rinse under cool water is fine. To cleanse it, set it on a selenite plate or in moonlight."
+    care: "Keep Rose Quartz out of direct sunlight, since its pink can fade. If it gets dusty, a quick rinse under cool water is fine. To cleanse it, set it on a selenite plate or use sound or smoke."
   },
   moonstone: {
     name: "Moonstone",
@@ -237,7 +238,7 @@ const CRYSTAL_EMAIL = {
     place: "on your nightstand or near a window where it catches the light",
     tip: "When things feel uncertain, hold it and remind yourself that this is a phase, not forever.",
     notice: "notice what's felt steadier.",
-    care: "Moonstone is fairly soft, so store it apart from harder crystals to avoid scratches. Keep it dry. To cleanse it, set it in moonlight or on a selenite plate."
+    care: "Moonstone is fairly soft, so store it apart from harder crystals to avoid scratches. Keep it dry. To cleanse it, set it on a selenite plate or use sound or smoke."
   },
   labradorite: {
     name: "Labradorite",
