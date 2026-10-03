@@ -264,7 +264,7 @@ const CRYSTAL_EMAIL = {
     place: "near where you journal or reflect",
     tip: "Hold it while you write down the pattern you want gone and what usually sets it off.",
     notice: "notice one moment when you caught the pattern before it ran its course.",
-    care: "Dust it with a soft, dry cloth and keep it dry. It's soft and scratches easily, so store it on its own. To cleanse it, set it on a selenite plate for several hours or overnight."
+    care: "Dust it with a soft, dry cloth and keep it dry. It's a copper mineral: polished pieces are fine to hold, just wash your hands after raw ones. To cleanse it, set it on a selenite plate for several hours or overnight."
   }
 };
 
