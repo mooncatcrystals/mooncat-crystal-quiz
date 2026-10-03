@@ -33,6 +33,14 @@ const THEME_SEGMENT_ENV_KEYS = {
 // "find your crystal lead" segment: Flodesk's "Crystal Key Lead - MC"
 // workflow fires on that one and sends the Crystal Key ebook.
 
+// Readable values for the Crystal Experience Level field, so it reads well
+// if it's ever dropped into an email.
+const EXPERIENCE_LABELS = {
+  beginner: "New to crystals",
+  some_experience: "Some experience",
+  experienced: "Experienced"
+};
+
 function isValidEmail(email) {
   return typeof email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -85,10 +93,15 @@ export async function onRequestPost(context) {
   const body = {
     email: email,
     segment_ids: segmentIds,
+    // Keys are the field keys Flodesk gave the "Crystal Match", "Crystal
+    // Theme" and "Crystal Experience Level" custom fields (created in a
+    // draft form, since Flodesk only creates fields in the form builder).
+    // Unregistered keys get stored but never show up in the email editor's
+    // @ personalization menu.
     custom_fields: {
-      "Crystal Match": crystalName,
-      "Crystal Theme": themeName,
-      "Crystal Experience Level": experienceLevel
+      crystalMatch: crystalName,
+      crystalTheme: themeName,
+      crystalExperienceLevel: EXPERIENCE_LABELS[experienceLevel] || experienceLevel
     }
   };
   if (firstName) body.first_name = firstName;
