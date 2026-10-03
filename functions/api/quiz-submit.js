@@ -399,6 +399,35 @@ export async function onRequestPost(context) {
       });
     };
 
+    // Retakes: take the person out of every quiz segment first, then the
+    // sign-up below adds them back to the master + their CURRENT theme.
+    // Being re-added to the master segment is what restarts the Crystal Quiz
+    // Welcome workflow, so they get an email with their new result (Flodesk's
+    // "Allow repeat subscribers" wait time limits how often). It also means
+    // nobody sits in an old theme segment. A first-time sign-up isn't in
+    // Flodesk yet, so a 404 here is normal; any other failure is logged and
+    // the sign-up still goes ahead.
+    const quizSegmentIds = [masterSegmentId]
+      .concat(Object.keys(THEME_SEGMENT_ENV_KEYS).map(function (k) { return env[THEME_SEGMENT_ENV_KEYS[k]]; }))
+      .filter(Boolean);
+    if (quizSegmentIds.length) {
+      try {
+        const removal = await fetch(FLODESK_API_URL + "/" + encodeURIComponent(email) + "/segments", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": authHeader
+          },
+          body: JSON.stringify({ segment_ids: quizSegmentIds })
+        });
+        if (!removal.ok && removal.status !== 404) {
+          console.warn("Flodesk segment removal failed", removal.status, (await removal.text()).slice(0, 300));
+        }
+      } catch (err) {
+        console.warn("Flodesk segment removal errored", err);
+      }
+    }
+
     let response = await send(body);
     let flodeskError = null;
 
