@@ -399,39 +399,6 @@ export async function onRequestPost(context) {
       });
     };
 
-    // Retakes: take the person out of every quiz segment first, then the
-    // sign-up below adds them back to the master + their CURRENT theme.
-    // Being re-added to the master segment is what restarts the Crystal Quiz
-    // Welcome workflow, so they get an email with their new result (Flodesk's
-    // "Allow repeat subscribers" wait time limits how often). It also means
-    // nobody sits in an old theme segment. A first-time sign-up isn't in
-    // Flodesk yet, so a 404 here is normal; any other failure is logged and
-    // the sign-up still goes ahead.
-    const quizSegmentIds = [masterSegmentId]
-      .concat(Object.keys(THEME_SEGMENT_ENV_KEYS).map(function (k) { return env[THEME_SEGMENT_ENV_KEYS[k]]; }))
-      .filter(Boolean);
-    let removalResult = "skipped";
-    if (quizSegmentIds.length) {
-      try {
-        const removal = await fetch(FLODESK_API_URL + "/" + encodeURIComponent(email) + "/segments", {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": authHeader
-          },
-          body: JSON.stringify({ segment_ids: quizSegmentIds })
-        });
-        removalResult = String(removal.status);
-        if (!removal.ok && removal.status !== 404) {
-          removalResult += " " + (await removal.text()).slice(0, 300);
-          console.warn("Flodesk segment removal failed", removalResult);
-        }
-      } catch (err) {
-        removalResult = "error " + String(err).slice(0, 200);
-        console.warn("Flodesk segment removal errored", err);
-      }
-    }
-
     let response = await send(body);
     let flodeskError = null;
 
@@ -457,17 +424,49 @@ export async function onRequestPost(context) {
       }
     }
 
+    // Retakes: Flodesk only ADDS segments on a sign-up, so someone who retakes
+    // the quiz would collect every theme they've ever matched. The sign-up
+    // response lists the segments they're in now, so remove any OTHER quiz
+    // theme segments, by subscriber id (Flodesk 404s when the email is used
+    // in this path). Quiz: All Takers is cleared by the Crystal Quiz Welcome
+    // workflow itself after the email goes out, which is what lets a retake
+    // start the workflow again. A failure here is logged; the sign-up stands.
+    let removal = "none needed";
+    try {
+      const subscriber = await response.json();
+      const themeIds = Object.keys(THEME_SEGMENT_ENV_KEYS)
+        .map(function (k) { return env[THEME_SEGMENT_ENV_KEYS[k]]; })
+        .filter(Boolean);
+      const stale = (subscriber.segments || [])
+        .map(function (seg) { return seg.id; })
+        .filter(function (id) { return id && id !== themeSegmentId && themeIds.indexOf(id) !== -1; });
+      if (stale.length && subscriber.id) {
+        const res = await fetch(FLODESK_API_URL + "/" + subscriber.id + "/segments", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": authHeader
+          },
+          body: JSON.stringify({ segment_ids: stale })
+        });
+        removal = res.status + (res.ok ? "" : " " + (await res.text()).slice(0, 300)) + " (" + stale.length + " old theme)";
+        if (!res.ok) console.warn("Flodesk old-theme removal failed", removal);
+      }
+    } catch (err) {
+      removal = "error " + String(err).slice(0, 200);
+      console.warn("Flodesk old-theme removal errored", err);
+    }
+
     if (!themeSegmentId) {
       console.warn(
         `No Flodesk segment id configured for theme "${crystal.theme}" yet (set ${THEME_SEGMENT_ENV_KEYS[crystal.theme]} in Cloudflare Pages env vars). Subscriber was still created in Flodesk.`
       );
     }
 
-    // removal: how the "take them out of old quiz segments" step went, so a
-    // test sign-up shows whether retakes are being cleaned up.
+    // removal: how the old-theme cleanup went, so a test sign-up shows it.
     return respond(200, flodeskError
-      ? { ok: true, partial: true, flodeskError: flodeskError, removal: removalResult }
-      : { ok: true, removal: removalResult });
+      ? { ok: true, partial: true, flodeskError: flodeskError, removal: removal }
+      : { ok: true, removal: removal });
   } catch (err) {
     console.error("Error calling Flodesk API", err);
     return respond(500, { ok: false, error: "Unexpected error" });
