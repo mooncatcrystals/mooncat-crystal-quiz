@@ -225,6 +225,7 @@
   .product-card .pc-arrow { font-size: 15px; color: var(--purple); flex: none; }
 
   .shop-btn {
+    margin-bottom: 26px;
     display: block;
     width: 100%;
     text-align: center;
@@ -493,84 +494,98 @@
   ];
 
   // ---------------------------------------------------------------
-  // 2. QUESTIONS — deterministic scored decision tree. No AI involved.
+  // 2. QUESTIONS — deterministic, branching. No AI involved.
   //
-  //    Every crystal needs at least one EXCLUSIVE (not shared with
-  //    theme-mates) high-point option somewhere outside the color
-  //    question, or the result quietly collapses into "whichever one
-  //    they picked the color for" for any two crystals in the same
-  //    theme (e.g. Citrine/Pyrite/Tiger's Eye were
-  //    all indistinguishable except by color before Q4 was rewritten
-  //    below). Q1 and Q3 stay broad/atmospheric on purpose — Q4 is the
-  //    one that has to carry hard disambiguation, so keep its options
-  //    exclusive when adding to it.
+  //    Question 1 sorts people into one of four GROUPS. Questions 2-4
+  //    then only show the options for that group's crystals, so each
+  //    screen has 3-4 choices instead of 15. The result is always a
+  //    crystal from the chosen group.
+  //
+  //    Every crystal gets exactly one option in each of questions 2-4.
+  //    If those three answers point to three different crystals, the
+  //    "need most" answer (question 4, marked decides: true) wins.
+  //    When adding a crystal: put it in a group below, then give it
+  //    one option in each of questions 2, 3 and 4.
   // ---------------------------------------------------------------
+  var GROUPS = {
+    calm: ["amethyst", "selenite", "clear_quartz", "fluorite"],
+    drive: ["citrine", "pyrite", "tigers_eye", "carnelian"],
+    protect: ["black_tourmaline", "smoky_quartz", "obsidian"],
+    heart: ["rose_quartz", "moonstone", "labradorite", "malachite"]
+  };
+
   var QUESTIONS = [
     {
       title: "What are you craving most right now?",
       options: [
-        { text: "Calm, clarity, and a clear head", points: { amethyst: 2, selenite: 2, clear_quartz: 2, fluorite: 1 } },
-        { text: "Confidence, momentum, and abundance", points: { citrine: 2, pyrite: 1, tigers_eye: 1 } },
-        { text: "Protection and stronger boundaries", points: { black_tourmaline: 3, smoky_quartz: 1, obsidian: 1 } },
-        { text: "Self-love and a softer heart", points: { rose_quartz: 3 } },
-        { text: "Motivation to actually take action", points: { carnelian: 3 } },
-        { text: "Clarity on a big change or transition", points: { moonstone: 2, labradorite: 2, malachite: 1 } }
+        { text: "Calm, clarity, and a clear head", group: "calm", points: {} },
+        { text: "Confidence, momentum, and abundance", group: "drive", points: {} },
+        { text: "Motivation to actually take action", group: "drive", points: { carnelian: 1 } },
+        { text: "Protection and stronger boundaries", group: "protect", points: {} },
+        { text: "Self-love and a softer heart", group: "heart", points: { rose_quartz: 1 } },
+        { text: "Clarity on a big change or transition", group: "heart", points: {} }
       ]
     },
     {
       title: "Pick the color pulling at you most.",
       layout: "swatch",
       options: [
-        { text: "Soft pink", color: "#e8b4c4", points: { rose_quartz: 3 } },
         { text: "Deep violet", color: "#7c5ba6", points: { amethyst: 3 } },
         { text: "Icy, clear white", color: "#eef1f5", points: { selenite: 3 } },
         { text: "Perfectly clear, like glass", color: "#d9e7e6", points: { clear_quartz: 3 } },
+        { text: "Purple fading into sea green", color: "#8e86bf", points: { fluorite: 3 } },
         { text: "Sunny gold", color: "#e8b923", points: { citrine: 3 } },
         { text: "Metallic gold", color: "#b8963f", points: { pyrite: 3 } },
-        { text: "Deep swirling green", color: "#2e5c3e", points: { malachite: 3 } },
-        { text: "Purple fading into sea green", color: "#8e86bf", points: { fluorite: 3 } },
-        { text: "Midnight black", color: "#1a1a1a", points: { black_tourmaline: 3 } },
-        { text: "Glossy black glass", color: "#0b0b10", points: { obsidian: 3 } },
-        { text: "Smoky brown-grey", color: "#6b5d54", points: { smoky_quartz: 3 } },
         { text: "Golden brown shimmer", color: "#a67c3d", points: { tigers_eye: 3 } },
         { text: "Fiery orange", color: "#d9702e", points: { carnelian: 3 } },
+        { text: "Midnight black", color: "#1a1a1a", points: { black_tourmaline: 3 } },
+        { text: "Smoky brown-grey", color: "#6b5d54", points: { smoky_quartz: 3 } },
+        { text: "Glossy black glass", color: "#0b0b10", points: { obsidian: 3 } },
+        { text: "Soft pink", color: "#e8b4c4", points: { rose_quartz: 3 } },
         { text: "Glowy moonlit white", color: "#dcd6e8", points: { moonstone: 3 } },
-        { text: "Stormy blue-grey shimmer", color: "#5b6b7a", points: { labradorite: 3 } }
+        { text: "Stormy blue-grey shimmer", color: "#5b6b7a", points: { labradorite: 3 } },
+        { text: "Deep swirling green", color: "#2e5c3e", points: { malachite: 3 } }
       ]
     },
     {
       title: "What's going on in your life right now?",
       options: [
-        { text: "I'm burnt out and overstimulated", points: { amethyst: 2, selenite: 2 } },
-        { text: "I keep giving my energy to people or things that drain me", points: { black_tourmaline: 3 } },
-        { text: "I'm working on loving myself again", points: { rose_quartz: 3 } },
-        { text: "I'm building something — money, a business, a goal", points: { citrine: 2, pyrite: 2, tigers_eye: 1 } },
-        { text: "I need courage to take the next step", points: { carnelian: 3 } },
-        { text: "I'm in a big transition and want to trust the process", points: { moonstone: 2, labradorite: 2 } },
-        { text: "I'm done managing the same pattern — I want it gone for good", points: { malachite: 3 } },
-        { text: "Everything feels heavy and I need to release something", points: { smoky_quartz: 3 } },
+        { text: "My mind won't slow down, even when I'm exhausted", points: { amethyst: 3 } },
+        { text: "My space or my energy feels heavy and cluttered", points: { selenite: 3 } },
+        { text: "I want one crystal that amplifies everything else I'm doing", points: { clear_quartz: 3 } },
         { text: "I have too much going on and can't focus on any of it", points: { fluorite: 3 } },
+        { text: "I'm working toward more money or a bigger goal", points: { citrine: 3 } },
+        { text: "I'm building a business or a big goal, and I'm taking it seriously", points: { pyrite: 3 } },
+        { text: "I'm in the middle of something long-term and need to stay disciplined", points: { tigers_eye: 3 } },
+        { text: "I need courage to take the next step", points: { carnelian: 3 } },
+        { text: "I keep giving my energy to people or things that drain me", points: { black_tourmaline: 3 } },
+        { text: "Everything feels heavy and I need to release something", points: { smoky_quartz: 3 } },
         { text: "There's something I keep avoiding that I know I need to face", points: { obsidian: 3 } },
-        { text: "I want one crystal that amplifies everything else I'm doing", points: { clear_quartz: 3 } }
+        { text: "I'm working on loving myself again", points: { rose_quartz: 3 } },
+        { text: "I'm in a big transition and want to trust the process", points: { moonstone: 3 } },
+        { text: "I'm starting something new and want to trust my intuition", points: { labradorite: 3 } },
+        { text: "I'm done managing the same pattern. I want it gone for good", points: { malachite: 3 } }
       ]
     },
     {
-      // The disambiguator. Every option is exclusive to exactly one
-      // crystal so theme-mates (e.g. the three confidence/abundance
-      // stones) actually get separated instead of tying.
       title: "If you're honest, what do you need most right now?",
+      decides: true,
       options: [
         { text: "To turn the volume down on my anxious thoughts", points: { amethyst: 3 } },
         { text: "To clear the heaviness stuck in my head or my space", points: { selenite: 3 } },
         { text: "One thing that sharpens my focus and makes my intentions stick", points: { clear_quartz: 3 } },
+        { text: "To sort out the mental clutter so I can think straight", points: { fluorite: 3 } },
         { text: "To finally say “why not me” and go for it", points: { citrine: 3 } },
         { text: "To protect what I'm building while I build it", points: { pyrite: 3 } },
         { text: "To keep showing up after the excitement fades", points: { tigers_eye: 3 } },
+        { text: "To stop overthinking and start doing", points: { carnelian: 3 } },
+        { text: "To stop absorbing everyone else's stress", points: { black_tourmaline: 3 } },
+        { text: "To let go of what I've been carrying", points: { smoky_quartz: 3 } },
+        { text: "To see my situation clearly, even the parts I've been avoiding", points: { obsidian: 3 } },
+        { text: "To be kinder to myself", points: { rose_quartz: 3 } },
         { text: "To feel steady while everything around me changes", points: { moonstone: 3 } },
         { text: "To feel brave enough to become who I'm changing into", points: { labradorite: 3 } },
-        { text: "To let go of a pattern I keep repeating, for good", points: { malachite: 3 } },
-        { text: "To sort out the mental clutter so I can think straight", points: { fluorite: 3 } },
-        { text: "To see my situation clearly, even the parts I've been avoiding", points: { obsidian: 3 } }
+        { text: "To let go of a pattern I keep repeating, for good", points: { malachite: 3 } }
       ]
     }
   ];
@@ -607,7 +622,7 @@
   // ---------------------------------------------------------------
   // State + navigation
   // ---------------------------------------------------------------
-  var state = { qIndex: 0, scores: {}, resultKey: null, meta: {} };
+  var state = { qIndex: 0, scores: {}, resultKey: null, meta: {}, group: null, decider: null };
   Object.keys(CRYSTALS).forEach(function (k) { state.scores[k] = 0; });
 
   var TOTAL_STEPS = QUESTIONS.length + META_QUESTIONS.length;
@@ -657,7 +672,7 @@
       optionsEl.innerHTML = "";
       if (q.layout === "swatch") optionsEl.classList.add("swatch-grid");
 
-      q.options.forEach(function (opt) {
+      q.options.filter(inGroup).forEach(function (opt) {
         var btn = document.createElement("button");
         btn.type = "button";
         btn.className = q.layout === "swatch" ? "option swatch" : "option";
@@ -691,6 +706,13 @@
     }
   }
 
+  // An option belongs to the chosen group if every crystal it scores is
+  // in that group. Before question 1 is answered there's no group yet.
+  function inGroup(opt) {
+    if (!state.group) return true;
+    return Object.keys(opt.points).every(function (k) { return GROUPS[state.group].indexOf(k) !== -1; });
+  }
+
   function handleAnswer(opt, btnEl) {
     btnEl.classList.add("selected");
     Array.prototype.forEach.call(document.getElementById("q-options").children, function (b) { b.disabled = true; });
@@ -698,6 +720,8 @@
     Object.keys(opt.points).forEach(function (crystalKey) {
       state.scores[crystalKey] += opt.points[crystalKey];
     });
+    if (opt.group) state.group = opt.group;
+    if (QUESTIONS[state.qIndex].decides) state.decider = Object.keys(opt.points)[0];
 
     setTimeout(function () {
       fadeSwap(function () {
@@ -725,11 +749,16 @@
     }, 250);
   }
 
+  // Highest score within the chosen group wins. On a tie, the
+  // "need most" answer decides, then TIE_BREAK_ORDER.
   function calculateResult() {
+    var candidates = state.group ? GROUPS[state.group] : Object.keys(CRYSTALS);
     var best = null, bestScore = -1;
     TIE_BREAK_ORDER.forEach(function (key) {
-      if (state.scores[key] > bestScore) {
-        bestScore = state.scores[key];
+      if (candidates.indexOf(key) === -1) return;
+      var score = state.scores[key];
+      if (score > bestScore || (score === bestScore && key === state.decider)) {
+        bestScore = score;
         best = key;
       }
     });
@@ -885,6 +914,8 @@
       state.qIndex = 0;
       state.resultKey = null;
       state.meta = {};
+      state.group = null;
+      state.decider = null;
       Object.keys(CRYSTALS).forEach(function (k) { state.scores[k] = 0; });
 
       document.getElementById("save-form").reset();

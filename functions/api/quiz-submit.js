@@ -17,8 +17,8 @@ const FLODESK_API_URL = "https://api.flodesk.com/v1/subscribers";
 //   Quiz: Motivation & Action        -> FLODESK_SEGMENT_MOTIVATION_ACTION
 //   Quiz: Intuition & Transformation -> FLODESK_SEGMENT_INTUITION_TRANSFORMATION
 // Paste each new segment's id into the matching Cloudflare Pages env var below.
-// Until a given one is set, that theme's subscribers still get created and
-// tagged into the master list — they just won't get the theme tag yet.
+// Until a given one is set, that theme's subscribers still get created in
+// Flodesk (and the master segment, if set) — they just won't get the theme tag yet.
 const THEME_SEGMENT_ENV_KEYS = {
   heart_self_love: "FLODESK_SEGMENT_HEART_SELF_LOVE",
   calm_clarity: "FLODESK_SEGMENT_CALM_CLARITY",
@@ -28,10 +28,10 @@ const THEME_SEGMENT_ENV_KEYS = {
   intuition_transformation: "FLODESK_SEGMENT_INTUITION_TRANSFORMATION"
 };
 
-// "find your crystal lead" — the existing master segment for everyone who
-// takes the quiz, regardless of result. Override with FLODESK_SEGMENT_MASTER
-// if you'd rather use a different one.
-const DEFAULT_MASTER_SEGMENT_ID = "6446e192d63ae7706486daaa";
+// Optional extra segment every quiz-taker joins, whatever their result.
+// Off unless FLODESK_SEGMENT_MASTER is set. Don't point it at the old
+// "find your crystal lead" segment: Flodesk's "Crystal Key Lead - MC"
+// workflow fires on that one and sends the Crystal Key ebook.
 
 function isValidEmail(email) {
   return typeof email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -77,7 +77,7 @@ export async function onRequestPost(context) {
     return respond(500, { ok: false, error: "Server not configured" });
   }
 
-  const masterSegmentId = env.FLODESK_SEGMENT_MASTER || DEFAULT_MASTER_SEGMENT_ID;
+  const masterSegmentId = env.FLODESK_SEGMENT_MASTER;
   const themeSegmentId = env[THEME_SEGMENT_ENV_KEYS[themeKey]];
 
   const segmentIds = [masterSegmentId, themeSegmentId].filter(Boolean);
@@ -112,7 +112,7 @@ export async function onRequestPost(context) {
 
     if (!themeSegmentId) {
       console.warn(
-        `No Flodesk segment id configured for theme "${themeKey}" yet (set ${THEME_SEGMENT_ENV_KEYS[themeKey]} in Cloudflare Pages env vars). Subscriber was still added to the master list.`
+        `No Flodesk segment id configured for theme "${themeKey}" yet (set ${THEME_SEGMENT_ENV_KEYS[themeKey]} in Cloudflare Pages env vars). Subscriber was still created in Flodesk.`
       );
     }
 
