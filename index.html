@@ -203,7 +203,10 @@
     font-size: 26px; line-height: 1; color: var(--text-soft); cursor: pointer;
   }
   #screen-signup h2 { font-size: 27px; margin: 6px 0 10px; }
-  #screen-signup .signup-copy { font-size: 15px; line-height: 1.6; color: var(--cream-text); margin: 0 auto 20px; max-width: 420px; }
+  #screen-signup .signup-copy { font-size: 15px; line-height: 1.6; color: var(--cream-text); margin: 0 auto 12px; max-width: 420px; }
+  #screen-signup .signup-perks { text-align: left; max-width: 400px; margin: 0 auto 20px; padding-left: 20px; font-size: 14.5px; line-height: 1.6; color: var(--cream-text); }
+  #screen-signup .signup-perks li { margin-bottom: 4px; }
+  #screen-signup .signup-perks li::marker { color: var(--purple); }
   #screen-signup .signup-form { flex-direction: column; text-align: left; }
   #screen-signup .signup-form button { padding: 14px 18px; font-size: 14.5px; }
   #screen-signup .skip { display: inline-block; margin-top: 14px; font-size: 13.5px; color: var(--text-soft); text-decoration: underline; cursor: pointer; background: none; border: none; font-family: inherit; }
@@ -323,12 +326,17 @@
       <button type="button" class="close-x" id="signup-close" aria-label="Skip and show my result">&times;</button>
       <div class="result-eyebrow">Your result is ready</div>
       <h2>We've found your crystal match</h2>
-      <p class="signup-copy">Want a copy in your inbox? Add your name and email and we'll send your result, plus tips for working with your crystal.</p>
+      <p class="signup-copy">You'll see it on the next screen. Want the full version? We'll email you what isn't on the results page:</p>
+      <ul class="signup-perks">
+        <li>Why it fits, based on your answers</li>
+        <li>A simple plan for your first week with it</li>
+        <li>How to care for your crystal (some can't get wet, some fade in the sun)</li>
+      </ul>
       <form id="signup-form" class="save-form signup-form">
         <input type="text" id="signup-name" autocomplete="given-name" placeholder="First name" required>
         <input type="email" id="signup-email" autocomplete="email" placeholder="you@email.com" required>
         <input type="text" id="signup-hp" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <button type="submit" id="signup-btn">Send It + Show My Result</button>
+        <button type="submit" id="signup-btn">Email My Full Result</button>
       </form>
       <div class="form-error" id="signup-error"></div>
       <button type="button" class="skip" id="signup-skip">No thanks, just show my result</button>
@@ -357,7 +365,7 @@
 
       <!-- Second chance for people who skipped the sign-up screen -->
       <div class="save-result" id="save-result">
-        <p id="save-copy">Want this result + tips for working with it sent to your inbox?</p>
+        <p id="save-copy">Want the full version by email? Why it fits your answers, a first-week plan, and how to care for your crystal.</p>
         <form id="save-form" class="save-form">
           <input type="text" id="save-name" autocomplete="given-name" placeholder="First name" required>
           <input type="email" id="save-email" autocomplete="email" placeholder="you@email.com" required>
@@ -913,7 +921,7 @@
 
   document.getElementById("signup-form").addEventListener("submit", function (e) {
     e.preventDefault();
-    submitSignup("signup", "Send It + Show My Result", showResult);
+    submitSignup("signup", "Email My Full Result", showResult);
   });
   document.getElementById("signup-skip").addEventListener("click", showResult);
   document.getElementById("signup-close").addEventListener("click", showResult);
@@ -995,7 +1003,7 @@
       document.getElementById("signup-error").textContent = "";
       var signupBtn = document.getElementById("signup-btn");
       signupBtn.disabled = false;
-      signupBtn.textContent = "Send It + Show My Result";
+      signupBtn.textContent = "Email My Full Result";
       document.getElementById("save-result").hidden = false;
       document.getElementById("save-success").hidden = true;
       var saveBtn = document.getElementById("save-btn");
