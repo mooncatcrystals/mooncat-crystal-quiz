@@ -541,19 +541,18 @@
   // ---------------------------------------------------------------
   // 2. QUESTIONS — deterministic, branching. No AI involved.
   //
-  //    Question 1 sorts people into one of four GROUPS. Questions 2-4
+  //    Question 1 sorts people into one of four GROUPS. Questions 2-3
   //    then only show the options for that group's crystals, so each
   //    screen has 3-4 choices instead of 15. The result is always a
   //    crystal from the chosen group.
   //
-  //    Every crystal gets exactly one option in each of questions 2-4.
+  //    Every crystal gets exactly one option in each of questions 2-3.
   //    Weights: question 1 adds 1 point inside the group (when the
-  //    answer is more specific than the group), color adds 1, "life right
-  //    now" adds 3, "need most" adds 3 and wins ties (decides: true). So
-  //    questions 3 and 4 carry the result, and when they disagree, the
-  //    smaller answers (craving, color) tip it.
+  //    answer is more specific than the group), "life right now" adds 3,
+  //    "need most" adds 3 and wins ties (decides: true). So questions 2
+  //    and 3 carry the result, and when they disagree, question 1 tips it.
   //    When adding a crystal: put it in a group below, then give it
-  //    one option in each of questions 2, 3 and 4.
+  //    one option in each of questions 2 and 3.
   // ---------------------------------------------------------------
   var GROUPS = {
     calm: ["amethyst", "selenite", "clear_quartz", "fluorite"],
@@ -572,27 +571,6 @@
         { text: "Protection and stronger boundaries", group: "protect", points: {} },
         { text: "Self-love and a softer heart", group: "heart", points: { rose_quartz: 1 } },
         { text: "Clarity on a big change or transition", group: "heart", points: { moonstone: 1, labradorite: 1, malachite: 1 } }
-      ]
-    },
-    {
-      title: "Pick the color pulling at you most.",
-      layout: "swatch",
-      options: [
-        { text: "Deep violet", color: "#7c5ba6", points: { amethyst: 1 } },
-        { text: "Icy, clear white", color: "#eef1f5", points: { selenite: 1 } },
-        { text: "Perfectly clear, like glass", color: "#d9e7e6", points: { clear_quartz: 1 } },
-        { text: "Purple fading into sea green", color: "#8e86bf", points: { fluorite: 1 } },
-        { text: "Sunny gold", color: "#e8b923", points: { citrine: 1 } },
-        { text: "Metallic gold", color: "#b8963f", points: { pyrite: 1 } },
-        { text: "Golden brown shimmer", color: "#a67c3d", points: { tigers_eye: 1 } },
-        { text: "Fiery orange", color: "#d9702e", points: { carnelian: 1 } },
-        { text: "Midnight black", color: "#1a1a1a", points: { black_tourmaline: 1 } },
-        { text: "Smoky brown-grey", color: "#6b5d54", points: { smoky_quartz: 1 } },
-        { text: "Glossy black glass", color: "#0b0b10", points: { obsidian: 1 } },
-        { text: "Soft pink", color: "#e8b4c4", points: { rose_quartz: 1 } },
-        { text: "Glowy moonlit white", color: "#dcd6e8", points: { moonstone: 1 } },
-        { text: "Stormy blue-grey shimmer", color: "#5b6b7a", points: { labradorite: 1 } },
-        { text: "Deep swirling green", color: "#2e5c3e", points: { malachite: 1 } }
       ]
     },
     {
