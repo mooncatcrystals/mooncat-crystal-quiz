@@ -251,7 +251,6 @@ const CRYSTAL_EMAIL = {
 // The first sentence of "Your first week with it" depends on how they said
 // they want to use the crystal (question 4 in index.html).
 const FORM_OPENERS = {
-  jewelry: "Since you'd like to wear it, put it on each morning and let it be a reminder every time you notice it.",
   carry: "Since you'd like to carry it, keep a small piece in your pocket or bag and hold it for a moment whenever you reach for it.",
   ritual: "Since you'd like to work with it directly, hold it for a few minutes each morning and set one simple intention for the day."
 };

@@ -8,7 +8,7 @@ Quiz questions → result screen shows immediately (crystal match, live products
 ## Scoring design
 Branching. Question 1 sorts people into one of four groups (calm, drive, protect, heart; see `GROUPS` in `index.html`). Questions 2-3 only show the options for that group's 3-4 crystals, and the result is always from that group. Each crystal has exactly one option in questions 2 and 3. Weights: question 1 +1 inside the group (when the answer is more specific than the group), "life right now" +3, "need most" +3 and wins ties. To add a crystal, put it in a group and give it one option in questions 2 and 3. (A color question was cut on 2026-10-03: it only tipped close calls, and in the protect group all three swatches were black.)
 
-The two metadata questions (how you want to use it, experience level) don't affect which crystal you get — "how you want to use it" instead re-sorts the matched crystal's real in-stock products (a ring first for "wear it", a tower first for "keep it in my space") via keyword matching in `crystal-products.js`, so the *specific piece* recommended is sharper too, not just the crystal type.
+The two metadata questions (how you want to use it, experience level) don't affect which crystal you get — "how you want to use it" instead re-sorts the matched crystal's real in-stock products (a tumble or palm stone first for "carry it", a tower first for "keep it in my space") via keyword matching in `crystal-products.js`, so the *specific piece* recommended is sharper too, not just the crystal type.
 
 ## Files
 - `index.html` — the whole quiz (branding, questions, scoring, results, optional email opt-in)

@@ -17,13 +17,12 @@ const RESULT_COUNT = 4;
 // Someone's answer to "how do you actually want to use this crystal?"
 // (see META_QUESTIONS.formPreference in index.html) doesn't change which
 // crystal they match — it changes which of THAT crystal's real in-stock
-// pieces get put first, by matching against the product title. A ring
-// bubbles to the top for someone who said "wear it", a tower for someone
+// pieces get put first, by matching against the product title. A tumble
+// bubbles to the top for someone who said "carry it", a tower for someone
 // who said "keep it in my space", etc. Products that don't match any
 // keyword just sort after the matches — nothing is ever excluded, so a
 // thin OOAK collection still fills up to RESULT_COUNT.
 const FORM_KEYWORDS = {
-  jewelry: /ring|necklace|bracelet|pendant|earring|anklet/i,
   carry: /tumble|tumbled|palm stone|pocket|worry stone/i,
   space: /tower|cluster|sphere|geode|obelisk|slab|freeform|cauldron|candelabra|flame|heart|generator/i,
   ritual: /raw|rough|wand|point|specimen/i
