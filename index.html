@@ -436,6 +436,24 @@
       how: "Hold it while you name — out loud or in your head — what you're ready to release. Keep it nearby whenever you need to let something go without carrying it a step further.",
       shopUrl: "https://www.mooncatcrystals.com/collections/smoky-quartz"
     },
+    fluorite: {
+      name: "Fluorite",
+      tagline: "The Focus",
+      theme: "calm_clarity",
+      hook: "You don't need more ideas. You need a way to sort the ones you have.",
+      why: "Fluorite is the stone people reach for when their thinking feels scattered. It's associated with focus, mental order, and making decisions without second-guessing every one. This is for getting your head organized enough to actually finish things.",
+      how: "Keep it on your desk or wherever you work, study, or plan. Hold it for a minute before you start, and pick the one thing you're doing first.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/fluorite"
+    },
+    obsidian: {
+      name: "Obsidian",
+      tagline: "The Mirror",
+      theme: "protection_boundaries",
+      hook: "You'd rather see things as they are than keep guessing.",
+      why: "Obsidian is volcanic glass, and it's known as a stone of protection and honesty. It's associated with grounding, shielding your energy, and seeing clearly what's actually going on, including the parts that are easy to look away from. This is for when you want the real picture.",
+      how: "Keep it by your bed or front door for protection, or hold it while you journal about something you've been putting off. A small piece in your pocket works for grounding on hard days.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/obsidian"
+    },
     malachite: {
       name: "Malachite",
       tagline: "The Deep Shift",
@@ -471,7 +489,7 @@
   var TIE_BREAK_ORDER = [
     "rose_quartz", "amethyst", "citrine", "black_tourmaline", "selenite",
     "carnelian", "moonstone", "labradorite", "clear_quartz", "tigers_eye",
-    "smoky_quartz", "malachite", "pyrite"
+    "smoky_quartz", "malachite", "pyrite", "fluorite", "obsidian"
   ];
 
   // ---------------------------------------------------------------
@@ -491,9 +509,9 @@
     {
       title: "What are you craving most right now?",
       options: [
-        { text: "Calm, clarity, and a clear head", points: { amethyst: 2, selenite: 2, clear_quartz: 2 } },
+        { text: "Calm, clarity, and a clear head", points: { amethyst: 2, selenite: 2, clear_quartz: 2, fluorite: 1 } },
         { text: "Confidence, momentum, and abundance", points: { citrine: 2, pyrite: 1, tigers_eye: 1 } },
-        { text: "Protection and stronger boundaries", points: { black_tourmaline: 3, smoky_quartz: 1 } },
+        { text: "Protection and stronger boundaries", points: { black_tourmaline: 3, smoky_quartz: 1, obsidian: 1 } },
         { text: "Self-love and a softer heart", points: { rose_quartz: 3 } },
         { text: "Motivation to actually take action", points: { carnelian: 3 } },
         { text: "Clarity on a big change or transition", points: { moonstone: 2, labradorite: 2, malachite: 1 } }
@@ -510,7 +528,9 @@
         { text: "Sunny gold", color: "#e8b923", points: { citrine: 3 } },
         { text: "Metallic gold", color: "#b8963f", points: { pyrite: 3 } },
         { text: "Deep swirling green", color: "#2e5c3e", points: { malachite: 3 } },
+        { text: "Purple fading into sea green", color: "#8e86bf", points: { fluorite: 3 } },
         { text: "Midnight black", color: "#1a1a1a", points: { black_tourmaline: 3 } },
+        { text: "Glossy black glass", color: "#0b0b10", points: { obsidian: 3 } },
         { text: "Smoky brown-grey", color: "#6b5d54", points: { smoky_quartz: 3 } },
         { text: "Golden brown shimmer", color: "#a67c3d", points: { tigers_eye: 3 } },
         { text: "Fiery orange", color: "#d9702e", points: { carnelian: 3 } },
@@ -529,6 +549,8 @@
         { text: "I'm in a big transition and want to trust the process", points: { moonstone: 2, labradorite: 2 } },
         { text: "I'm done managing the same pattern — I want it gone for good", points: { malachite: 3 } },
         { text: "Everything feels heavy and I need to release something", points: { smoky_quartz: 3 } },
+        { text: "I have too much going on and can't focus on any of it", points: { fluorite: 3 } },
+        { text: "There's something I keep avoiding that I know I need to face", points: { obsidian: 3 } },
         { text: "I want one crystal that amplifies everything else I'm doing", points: { clear_quartz: 3 } }
       ]
     },
@@ -546,7 +568,9 @@
         { text: "To keep showing up after the excitement fades", points: { tigers_eye: 3 } },
         { text: "To feel steady while everything around me changes", points: { moonstone: 3 } },
         { text: "To feel brave enough to become who I'm changing into", points: { labradorite: 3 } },
-        { text: "To let go of a pattern I keep repeating, for good", points: { malachite: 3 } }
+        { text: "To let go of a pattern I keep repeating, for good", points: { malachite: 3 } },
+        { text: "To sort out the mental clutter so I can think straight", points: { fluorite: 3 } },
+        { text: "To see my situation clearly, even the parts I've been avoiding", points: { obsidian: 3 } }
       ]
     }
   ];

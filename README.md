@@ -1,6 +1,6 @@
 # Find Your Crystal — Mooncat Crystals Quiz
 
-Static quiz styled to match mooncatcrystals.com. Deterministic scoring (no AI) across 13 crystals — 6 questions total (4 scored, 2 metadata-only) — results link to live Shopify collections (not individual products, so they always reflect current stock) plus up to 4 real in-stock product cards. Email is **not required to see the result** — the result and shop links show immediately after the last question; email capture is a separate, optional ask on the result screen itself.
+Static quiz styled to match mooncatcrystals.com. Deterministic scoring (no AI) across 15 crystals — 6 questions total (4 scored, 2 metadata-only) — results link to live Shopify collections (not individual products, so they always reflect current stock) plus up to 4 real in-stock product cards. Email is **not required to see the result** — the result and shop links show immediately after the last question; email capture is a separate, optional ask on the result screen itself.
 
 ## Flow (result-first, not gated)
 Quiz questions → result screen shows immediately (crystal match, live products, "Shop →" button) → *optionally*, a small "email me this result" form on that same screen for people who want it saved/sent, which is the only thing that triggers Flodesk tagging. Getting people shopping is the priority; the email list is a bonus for whoever opts in on their own. If you ever want to go back to gating the result behind email, the relevant logic is `finishQuiz()` (reveals the result) vs. the `save-form` submit handler (Flodesk tagging) in `index.html` — they're now fully decoupled on purpose.
@@ -16,7 +16,7 @@ The two metadata questions (how you want to use it, experience level) don't affe
 - `functions/api/crystal-products.js` (served at `/api/crystal-products`) — looks up real in-stock products for the matched crystal's collection via the Shopify Storefront API, so the result screen shows live product cards (photo, price) instead of just a link. Uses the **same `SHOPIFY_STOREFRONT_TOKEN`** as `crystal-skool-dashboard/netlify/functions/shop-products.js` — reuse that value here rather than creating a new token. If the lookup fails or the token isn't set yet, it fails open and the result screen just shows the plain "Shop [Crystal] →" collection link instead.
 
 ## Segmentation strategy
-Subscribers are tagged at the **theme** level (6 groups covering the 13 crystals), not one segment per crystal — 6 nurture sequences are maintainable, 13 isn't. The exact crystal match is stored as a Flodesk **custom field** instead, so you can still personalize each theme's emails with merge tags (e.g. "since you matched with {{Crystal Match}}...").
+Subscribers are tagged at the **theme** level (6 groups covering the 15 crystals), not one segment per crystal — 6 nurture sequences are maintainable, 15 isn't. The exact crystal match is stored as a Flodesk **custom field** instead, so you can still personalize each theme's emails with merge tags (e.g. "since you matched with {{Crystal Match}}...").
 
 ## One-time setup
 See the full walkthrough from Claude. Short version:
