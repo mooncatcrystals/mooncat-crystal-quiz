@@ -410,6 +410,7 @@ export async function onRequestPost(context) {
     const quizSegmentIds = [masterSegmentId]
       .concat(Object.keys(THEME_SEGMENT_ENV_KEYS).map(function (k) { return env[THEME_SEGMENT_ENV_KEYS[k]]; }))
       .filter(Boolean);
+    let removalResult = "skipped";
     if (quizSegmentIds.length) {
       try {
         const removal = await fetch(FLODESK_API_URL + "/" + encodeURIComponent(email) + "/segments", {
@@ -420,10 +421,13 @@ export async function onRequestPost(context) {
           },
           body: JSON.stringify({ segment_ids: quizSegmentIds })
         });
+        removalResult = String(removal.status);
         if (!removal.ok && removal.status !== 404) {
-          console.warn("Flodesk segment removal failed", removal.status, (await removal.text()).slice(0, 300));
+          removalResult += " " + (await removal.text()).slice(0, 300);
+          console.warn("Flodesk segment removal failed", removalResult);
         }
       } catch (err) {
+        removalResult = "error " + String(err).slice(0, 200);
         console.warn("Flodesk segment removal errored", err);
       }
     }
@@ -459,7 +463,11 @@ export async function onRequestPost(context) {
       );
     }
 
-    return respond(200, flodeskError ? { ok: true, partial: true, flodeskError: flodeskError } : { ok: true });
+    // removal: how the "take them out of old quiz segments" step went, so a
+    // test sign-up shows whether retakes are being cleaned up.
+    return respond(200, flodeskError
+      ? { ok: true, partial: true, flodeskError: flodeskError, removal: removalResult }
+      : { ok: true, removal: removalResult });
   } catch (err) {
     console.error("Error calling Flodesk API", err);
     return respond(500, { ok: false, error: "Unexpected error" });
