@@ -272,18 +272,37 @@ const FORM_OPENERS = {
   ritual: "Since you'd like to work with it directly, hold it for a few minutes each morning and set one simple intention for the day."
 };
 
+// Flodesk rejects any custom field value over 256 characters, so the longer
+// email paragraphs are split across two fields that sit side by side in the
+// same paragraph of the email: Crystal Why + Crystal About, and Crystal First
+// Week + Crystal Week Tip.
+const FIELD_LIMIT = 256;
+
 function firstWeekText(crystal, formPreference) {
-  const opener = formPreference === "space" || !FORM_OPENERS[formPreference]
+  return formPreference === "space" || !FORM_OPENERS[formPreference]
     ? "Keep it " + crystal.place + "."
     : FORM_OPENERS[formPreference];
-  return opener + " " + crystal.tip + " By the end of the week, " + crystal.notice;
 }
 
-function whyText(crystal, situationKey, needKey) {
+function weekTipText(crystal) {
+  return crystal.tip + " By the end of the week, " + crystal.notice;
+}
+
+function whyText(situationKey, needKey) {
   const situation = CRYSTAL_EMAIL[situationKey] && CRYSTAL_EMAIL[situationKey].situation;
   const need = CRYSTAL_EMAIL[needKey] && CRYSTAL_EMAIL[needKey].need;
-  if (!situation || !need) return crystal.about;
-  return "You told us " + situation + ", and that what you need most is " + need + ". " + crystal.about;
+  if (!situation || !need) return "";
+  return "You told us " + situation + ", and that what you need most is " + need + ".";
+}
+
+// Safety net: never send a value Flodesk will reject. Cuts at the last full
+// sentence that fits (or the last word, if there isn't one).
+function fitField(text) {
+  if (text.length <= FIELD_LIMIT) return text;
+  const cut = text.slice(0, FIELD_LIMIT);
+  const lastStop = cut.lastIndexOf(". ");
+  if (lastStop > 0) return cut.slice(0, lastStop + 1);
+  return cut.slice(0, cut.lastIndexOf(" ")).replace(/[,;:]$/, "") + "…";
 }
 
 // First names go into an email Flodesk sends, so only accept something that
@@ -354,12 +373,17 @@ export async function onRequestPost(context) {
       crystalKeywords: crystal.keywords,
       crystalTheme: THEME_NAMES[crystal.theme],
       crystalExperienceLevel: experienceLevel,
-      crystalWhy: whyText(crystal, payload.situationKey, payload.needKey),
+      crystalWhy: whyText(payload.situationKey, payload.needKey),
+      crystalAbout: crystal.about,
       crystalFirstWeek: firstWeekText(crystal, payload.formPreference),
+      crystalWeekTip: weekTipText(crystal),
       crystalCare: crystal.care,
       crystalShopLink: crystal.shopUrl
     }
   };
+  Object.keys(body.custom_fields).forEach(function (k) {
+    body.custom_fields[k] = fitField(body.custom_fields[k]);
+  });
   if (firstName) body.first_name = firstName;
 
   try {
