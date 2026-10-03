@@ -364,19 +364,40 @@ export async function onRequestPost(context) {
 
   try {
     const authHeader = "Basic " + btoa(apiKey + ":");
-    const response = await fetch(FLODESK_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": authHeader
-      },
-      body: JSON.stringify(body)
-    });
+    const send = function (payloadBody) {
+      return fetch(FLODESK_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": authHeader
+        },
+        body: JSON.stringify(payloadBody)
+      });
+    };
 
+    let response = await send(body);
+    let flodeskError = null;
+
+    // If Flodesk rejects the full sign-up, try again with just the short
+    // fields so the person still lands on the list (the welcome email then
+    // shows its fallback text for the missing parts). Flodesk's own error
+    // message comes back in the response so the cause is visible.
     if (!response.ok) {
-      const errText = await response.text();
-      console.error("Flodesk API error", response.status, errText);
-      return respond(502, { ok: false, error: "Flodesk API error" });
+      flodeskError = (response.status + " " + (await response.text())).slice(0, 400);
+      console.error("Flodesk API error (full sign-up)", flodeskError);
+      const basic = Object.assign({}, body, {
+        custom_fields: {
+          crystalMatch: body.custom_fields.crystalMatch,
+          crystalTheme: body.custom_fields.crystalTheme,
+          crystalExperienceLevel: body.custom_fields.crystalExperienceLevel
+        }
+      });
+      response = await send(basic);
+      if (!response.ok) {
+        const retryError = (response.status + " " + (await response.text())).slice(0, 400);
+        console.error("Flodesk API error (basic sign-up)", retryError);
+        return respond(502, { ok: false, error: "Flodesk API error", flodeskError: flodeskError, retryError: retryError });
+      }
     }
 
     if (!themeSegmentId) {
@@ -385,7 +406,7 @@ export async function onRequestPost(context) {
       );
     }
 
-    return respond(200, { ok: true });
+    return respond(200, flodeskError ? { ok: true, partial: true, flodeskError: flodeskError } : { ok: true });
   } catch (err) {
     console.error("Error calling Flodesk API", err);
     return respond(500, { ok: false, error: "Unexpected error" });
