@@ -436,15 +436,6 @@
       how: "Hold it while you name — out loud or in your head — what you're ready to release. Keep it nearby whenever you need to let something go without carrying it a step further.",
       shopUrl: "https://www.mooncatcrystals.com/collections/smoky-quartz"
     },
-    green_aventurine: {
-      name: "Green Aventurine",
-      tagline: "The Opening",
-      theme: "confidence_abundance",
-      hook: "You're due for a win. An easy one, for once.",
-      why: "Green Aventurine is quiet, steady luck — the stone for when you're ready to stop forcing things and let opportunity find you instead. This is for softening your grip so more can actually get in.",
-      how: "Carry it when you're trying something new or taking a chance. Keep it near your front door to invite in what's meant for you.",
-      shopUrl: "https://www.mooncatcrystals.com/collections/green-aventurine"
-    },
     malachite: {
       name: "Malachite",
       tagline: "The Deep Shift",
@@ -480,7 +471,7 @@
   var TIE_BREAK_ORDER = [
     "rose_quartz", "amethyst", "citrine", "black_tourmaline", "selenite",
     "carnelian", "moonstone", "labradorite", "clear_quartz", "tigers_eye",
-    "smoky_quartz", "green_aventurine", "malachite", "pyrite"
+    "smoky_quartz", "malachite", "pyrite"
   ];
 
   // ---------------------------------------------------------------
@@ -490,7 +481,7 @@
   //    theme-mates) high-point option somewhere outside the color
   //    question, or the result quietly collapses into "whichever one
   //    they picked the color for" for any two crystals in the same
-  //    theme (e.g. Citrine/Pyrite/Green Aventurine/Tiger's Eye were
+  //    theme (e.g. Citrine/Pyrite/Tiger's Eye were
   //    all indistinguishable except by color before Q4 was rewritten
   //    below). Q1 and Q3 stay broad/atmospheric on purpose — Q4 is the
   //    one that has to carry hard disambiguation, so keep its options
@@ -501,7 +492,7 @@
       title: "What are you craving most right now?",
       options: [
         { text: "Calm, clarity, and a clear head", points: { amethyst: 2, selenite: 2, clear_quartz: 2 } },
-        { text: "Confidence, momentum, and abundance", points: { citrine: 2, pyrite: 1, green_aventurine: 1, tigers_eye: 1 } },
+        { text: "Confidence, momentum, and abundance", points: { citrine: 2, pyrite: 1, tigers_eye: 1 } },
         { text: "Protection and stronger boundaries", points: { black_tourmaline: 3, smoky_quartz: 1 } },
         { text: "Self-love and a softer heart", points: { rose_quartz: 3 } },
         { text: "Motivation to actually take action", points: { carnelian: 3 } },
@@ -518,7 +509,6 @@
         { text: "Perfectly clear, like glass", color: "#d9e7e6", points: { clear_quartz: 3 } },
         { text: "Sunny gold", color: "#e8b923", points: { citrine: 3 } },
         { text: "Metallic gold", color: "#b8963f", points: { pyrite: 3 } },
-        { text: "Fresh green", color: "#7fa66b", points: { green_aventurine: 3 } },
         { text: "Deep swirling green", color: "#2e5c3e", points: { malachite: 3 } },
         { text: "Midnight black", color: "#1a1a1a", points: { black_tourmaline: 3 } },
         { text: "Smoky brown-grey", color: "#6b5d54", points: { smoky_quartz: 3 } },
@@ -538,14 +528,13 @@
         { text: "I need courage to take the next step", points: { carnelian: 3 } },
         { text: "I'm in a big transition and want to trust the process", points: { moonstone: 2, labradorite: 2 } },
         { text: "I'm done managing the same pattern — I want it gone for good", points: { malachite: 3 } },
-        { text: "I'm ready to stop forcing things and let opportunity come to me", points: { green_aventurine: 3 } },
         { text: "Everything feels heavy and I need to release something", points: { smoky_quartz: 3 } },
         { text: "I want one crystal that amplifies everything else I'm doing", points: { clear_quartz: 3 } }
       ]
     },
     {
       // The disambiguator. Every option is exclusive to exactly one
-      // crystal so theme-mates (e.g. the four confidence/abundance
+      // crystal so theme-mates (e.g. the three confidence/abundance
       // stones) actually get separated instead of tying.
       title: "If you're honest, what do you need most right now?",
       options: [
@@ -554,7 +543,6 @@
         { text: "One thing that sharpens my focus and makes my intentions stick", points: { clear_quartz: 3 } },
         { text: "To finally say “why not me” and go for it", points: { citrine: 3 } },
         { text: "To protect what I'm building while I build it", points: { pyrite: 3 } },
-        { text: "To stop forcing things and let ease back in", points: { green_aventurine: 3 } },
         { text: "To keep showing up after the excitement fades", points: { tigers_eye: 3 } },
         { text: "To feel steady while everything around me changes", points: { moonstone: 3 } },
         { text: "To feel brave enough to become who I'm changing into", points: { labradorite: 3 } },
