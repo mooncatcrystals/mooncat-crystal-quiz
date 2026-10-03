@@ -12,9 +12,8 @@ The two metadata questions (how you want to use it, experience level) don't affe
 
 ## Files
 - `index.html` — the whole quiz (branding, questions, scoring, results, optional email opt-in)
-- `netlify/functions/quiz-submit.js` — server-side call to Flodesk (keeps the API key private)
-- `netlify/functions/crystal-products.js` — looks up real in-stock products for the matched crystal's collection via the Shopify Storefront API, so the result screen shows live product cards (photo, price) instead of just a link. Uses the **same `SHOPIFY_STOREFRONT_TOKEN`** as `crystal-skool-dashboard/netlify/functions/shop-products.js` — reuse that value here rather than creating a new token. If the lookup fails or the token isn't set yet, it fails open and the result screen just shows the plain "Shop [Crystal] →" collection link instead.
-- `netlify.toml` — tells Netlify where the functions live
+- `functions/api/quiz-submit.js` (served at `/api/quiz-submit`) — server-side call to Flodesk (keeps the API key private)
+- `functions/api/crystal-products.js` (served at `/api/crystal-products`) — looks up real in-stock products for the matched crystal's collection via the Shopify Storefront API, so the result screen shows live product cards (photo, price) instead of just a link. Uses the **same `SHOPIFY_STOREFRONT_TOKEN`** as `crystal-skool-dashboard/netlify/functions/shop-products.js` — reuse that value here rather than creating a new token. If the lookup fails or the token isn't set yet, it fails open and the result screen just shows the plain "Shop [Crystal] →" collection link instead.
 
 ## Segmentation strategy
 Subscribers are tagged at the **theme** level (6 groups covering the 14 crystals), not one segment per crystal — 6 nurture sequences are maintainable, 14 isn't. The exact crystal match is stored as a Flodesk **custom field** instead, so you can still personalize each theme's emails with merge tags (e.g. "since you matched with {{Crystal Match}}...").
@@ -25,8 +24,8 @@ See the full walkthrough from Claude. Short version:
    `Quiz: Self-Love & Heart`, `Quiz: Calm & Clarity`, `Quiz: Confidence & Abundance`, `Quiz: Protection & Boundaries`, `Quiz: Motivation & Action`, `Quiz: Intuition & Transformation`
 2. In Flodesk, create 3 custom fields (Audience → Settings → Custom Fields): `Crystal Match`, `Crystal Theme`, `Crystal Experience Level`.
 3. Get a Flodesk API key (Settings → Integrations → API Keys).
-4. In Netlify → Site settings → Environment variables, set `FLODESK_API_KEY` plus one `FLODESK_SEGMENT_*` per theme (exact names are listed at the top of `quiz-submit.js`), and `SHOPIFY_STOREFRONT_TOKEN` (same value as the Crystal Skool Dashboard site's env var of the same name).
-5. Connect this folder/repo to a Netlify site to deploy.
+4. In Cloudflare → Workers & Pages → this project → Settings → Variables and Secrets, add (as encrypted secrets) `FLODESK_API_KEY` plus one `FLODESK_SEGMENT_*` per theme (exact names are listed at the top of `quiz-submit.js`), and `SHOPIFY_STOREFRONT_TOKEN` (same value as the Crystal Skool Dashboard site's env var of the same name).
+5. Hosted on Cloudflare Pages (not Netlify, so it never uses Netlify deploy credits). The project is connected to the GitHub repo with no build command and `/` as the output folder; Cloudflare picks up the `functions/` folder automatically. Every push to `main` redeploys.
 6. Update the "Take Our Crystal Quiz" link on mooncatcrystals.com (currently pointing at the old Canva quiz) to the new URL.
 7. Link the deployed URL from Instagram bio, email signature, etc.
 

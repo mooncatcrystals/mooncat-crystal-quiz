@@ -48,24 +48,30 @@ const QUERY = `
   }
 `;
 
-exports.handler = async function (event) {
-  if (event.httpMethod !== "GET") {
-    return { statusCode: 405, body: "Method Not Allowed" };
-  }
+function respond(status, data) {
+  return new Response(JSON.stringify(data), {
+    status: status,
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }
+  });
+}
 
-  const params = event.queryStringParameters || {};
-  const handle = params.handle;
+// Cloudflare Pages Function: served at /api/crystal-products. Only GET is
+// handled here; Cloudflare answers other methods with 405 on its own.
+export async function onRequestGet(context) {
+  const params = new URL(context.request.url).searchParams;
+  const handle = params.get("handle");
   if (!handle || !/^[a-z0-9-]+$/.test(handle)) {
-    return { statusCode: 400, body: JSON.stringify({ error: "Invalid collection handle" }) };
+    return respond(400, { error: "Invalid collection handle" });
   }
-  const formPreference = FORM_KEYWORDS.hasOwnProperty(params.form) ? params.form : null;
+  const form = params.get("form");
+  const formPreference = FORM_KEYWORDS.hasOwnProperty(form) ? form : null;
 
-  const token = process.env.SHOPIFY_STOREFRONT_TOKEN;
+  const token = context.env.SHOPIFY_STOREFRONT_TOKEN;
   if (!token) {
-    console.error("SHOPIFY_STOREFRONT_TOKEN is not set in the Netlify environment.");
+    console.error("SHOPIFY_STOREFRONT_TOKEN is not set in the Cloudflare Pages environment.");
     // Fail open with an empty list — the frontend falls back to the
     // collection link so a missing token never breaks the quiz.
-    return { statusCode: 200, body: JSON.stringify({ products: [] }) };
+    return respond(200, { products: [] });
   }
 
   try {
@@ -80,13 +86,13 @@ exports.handler = async function (event) {
 
     if (!res.ok) {
       console.error("Shopify Storefront API error", res.status, await res.text());
-      return { statusCode: 200, body: JSON.stringify({ products: [] }) };
+      return respond(200, { products: [] });
     }
 
     const json = await res.json();
     if (json.errors) {
       console.error("Shopify Storefront API errors", json.errors);
-      return { statusCode: 200, body: JSON.stringify({ products: [] }) };
+      return respond(200, { products: [] });
     }
 
     const edges = (json.data.collectionByHandle && json.data.collectionByHandle.products.edges) || [];
@@ -116,13 +122,9 @@ exports.handler = async function (event) {
         };
       });
 
-    return {
-      statusCode: 200,
-      headers: { "Cache-Control": "no-store" },
-      body: JSON.stringify({ products: products })
-    };
+    return respond(200, { products: products });
   } catch (err) {
     console.error("Error calling Shopify Storefront API", err);
-    return { statusCode: 200, body: JSON.stringify({ products: [] }) };
+    return respond(200, { products: [] });
   }
-};
+}

@@ -334,7 +334,7 @@
   //    Each links to a live Shopify collection (not a single product)
   //    so it always reflects current stock with zero upkeep.
   //    `theme` drives which Flodesk theme-segment + nurture track
-  //    the subscriber lands in (see netlify/functions/quiz-submit.js).
+  //    the subscriber lands in (see functions/api/quiz-submit.js).
   // ---------------------------------------------------------------
   var CRYSTALS = {
     rose_quartz: {
@@ -737,7 +737,7 @@
 
     var result = CRYSTALS[state.resultKey];
     var collectionHandle = result.shopUrl.split("/collections/")[1];
-    var productsUrl = "/.netlify/functions/crystal-products?handle=" + encodeURIComponent(collectionHandle) +
+    var productsUrl = "/api/crystal-products?handle=" + encodeURIComponent(collectionHandle) +
       "&form=" + encodeURIComponent(state.meta.formPreference || "");
 
     var productsPromise = fetch(productsUrl)
@@ -789,7 +789,7 @@
 
     var result = CRYSTALS[state.resultKey];
 
-    fetch("/.netlify/functions/quiz-submit", {
+    fetch("/api/quiz-submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

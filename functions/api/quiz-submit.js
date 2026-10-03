@@ -16,7 +16,7 @@ const FLODESK_API_URL = "https://api.flodesk.com/v1/subscribers";
 //   Quiz: Protection & Boundaries    -> FLODESK_SEGMENT_PROTECTION_BOUNDARIES
 //   Quiz: Motivation & Action        -> FLODESK_SEGMENT_MOTIVATION_ACTION
 //   Quiz: Intuition & Transformation -> FLODESK_SEGMENT_INTUITION_TRANSFORMATION
-// Paste each new segment's id into the matching Netlify env var below.
+// Paste each new segment's id into the matching Cloudflare Pages env var below.
 // Until a given one is set, that theme's subscribers still get created and
 // tagged into the master list — they just won't get the theme tag yet.
 const THEME_SEGMENT_ENV_KEYS = {
@@ -37,16 +37,23 @@ function isValidEmail(email) {
   return typeof email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-exports.handler = async function (event) {
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method Not Allowed" };
-  }
+function respond(status, data) {
+  return new Response(JSON.stringify(data), {
+    status: status,
+    headers: { "Content-Type": "application/json" }
+  });
+}
+
+// Cloudflare Pages Function: served at /api/quiz-submit. Only POST is
+// handled here; Cloudflare answers other methods with 405 on its own.
+export async function onRequestPost(context) {
+  const env = context.env;
 
   let payload;
   try {
-    payload = JSON.parse(event.body || "{}");
+    payload = await context.request.json();
   } catch (err) {
-    return { statusCode: 400, body: JSON.stringify({ ok: false, error: "Invalid JSON" }) };
+    return respond(400, { ok: false, error: "Invalid JSON" });
   }
 
   const email = (payload.email || "").trim();
@@ -58,20 +65,20 @@ exports.handler = async function (event) {
   const experienceLevel = (payload.experienceLevel || "").trim();
 
   if (!isValidEmail(email)) {
-    return { statusCode: 400, body: JSON.stringify({ ok: false, error: "Invalid email" }) };
+    return respond(400, { ok: false, error: "Invalid email" });
   }
   if (!THEME_SEGMENT_ENV_KEYS.hasOwnProperty(themeKey)) {
-    return { statusCode: 400, body: JSON.stringify({ ok: false, error: "Unknown themeKey" }) };
+    return respond(400, { ok: false, error: "Unknown themeKey" });
   }
 
-  const apiKey = process.env.FLODESK_API_KEY;
+  const apiKey = env.FLODESK_API_KEY;
   if (!apiKey) {
-    console.error("FLODESK_API_KEY is not set in the Netlify environment.");
-    return { statusCode: 500, body: JSON.stringify({ ok: false, error: "Server not configured" }) };
+    console.error("FLODESK_API_KEY is not set in the Cloudflare Pages environment.");
+    return respond(500, { ok: false, error: "Server not configured" });
   }
 
-  const masterSegmentId = process.env.FLODESK_SEGMENT_MASTER || DEFAULT_MASTER_SEGMENT_ID;
-  const themeSegmentId = process.env[THEME_SEGMENT_ENV_KEYS[themeKey]];
+  const masterSegmentId = env.FLODESK_SEGMENT_MASTER || DEFAULT_MASTER_SEGMENT_ID;
+  const themeSegmentId = env[THEME_SEGMENT_ENV_KEYS[themeKey]];
 
   const segmentIds = [masterSegmentId, themeSegmentId].filter(Boolean);
 
@@ -87,7 +94,7 @@ exports.handler = async function (event) {
   if (firstName) body.first_name = firstName;
 
   try {
-    const authHeader = "Basic " + Buffer.from(apiKey + ":").toString("base64");
+    const authHeader = "Basic " + btoa(apiKey + ":");
     const response = await fetch(FLODESK_API_URL, {
       method: "POST",
       headers: {
@@ -100,18 +107,18 @@ exports.handler = async function (event) {
     if (!response.ok) {
       const errText = await response.text();
       console.error("Flodesk API error", response.status, errText);
-      return { statusCode: 502, body: JSON.stringify({ ok: false, error: "Flodesk API error" }) };
+      return respond(502, { ok: false, error: "Flodesk API error" });
     }
 
     if (!themeSegmentId) {
       console.warn(
-        `No Flodesk segment id configured for theme "${themeKey}" yet (set ${THEME_SEGMENT_ENV_KEYS[themeKey]} in Netlify env vars). Subscriber was still added to the master list.`
+        `No Flodesk segment id configured for theme "${themeKey}" yet (set ${THEME_SEGMENT_ENV_KEYS[themeKey]} in Cloudflare Pages env vars). Subscriber was still added to the master list.`
       );
     }
 
-    return { statusCode: 200, body: JSON.stringify({ ok: true }) };
+    return respond(200, { ok: true });
   } catch (err) {
     console.error("Error calling Flodesk API", err);
-    return { statusCode: 500, body: JSON.stringify({ ok: false, error: "Unexpected error" }) };
+    return respond(500, { ok: false, error: "Unexpected error" });
   }
-};
+}
