@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find Your Crystal | Mooncat Crystals</title>
+<meta name="description" content="Answer a few quick questions and we'll match you with the crystal that fits exactly where you are right now.">
+<link rel="icon" href="https://www.mooncatcrystals.com/cdn/shop/files/Untitled_design_4.avif?v=1771447662&width=96">
+<style>
+  :root {
+    --black: #000000;
+    --cream: #ece2da;
+    --cream-text: #1c1c1c;
+    --tan: #e5cbb3;
+    --pink: #eca6ef;
+    --pink-border: #e1aae9;
+    --purple: #b999c4;
+    --text-soft: #5c534c;
+    --shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+
+  @font-face {
+    font-family: 'Merriweather';
+    src: url('https://www.mooncatcrystals.com/cdn/fonts/merriweather/merriweather_n4.349a72bc63b970a8b7f00dc33f5bda2ec52f79cc.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  body {
+    margin: 0;
+    background: #000;
+    color: var(--tan);
+    font-family: system_ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 36px 16px 70px;
+  }
+
+  h1, h2, h3 { font-family: 'Merriweather', Georgia, serif; font-weight: 400; margin: 0; }
+
+  .wrap { width: 100%; max-width: 580px; }
+
+  .brand { text-align: center; margin-bottom: 26px; }
+  .brand img { height: 62px; width: auto; }
+
+  .card {
+    background: var(--cream);
+    color: var(--cream-text);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 42px 34px;
+    position: relative;
+    overflow: hidden;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .card.fading { opacity: 0; transform: translateY(8px); }
+
+  .progress-track { height: 5px; background: rgba(28,28,28,0.12); border-radius: 99px; overflow: hidden; margin-bottom: 28px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--pink), var(--purple)); border-radius: 99px; transition: width 0.4s ease; width: 0%; }
+
+  /* Intro screen */
+  #screen-intro { text-align: center; }
+  #screen-intro h1 { font-size: 32px; line-height: 1.25; margin-bottom: 16px; }
+  #screen-intro p { color: var(--text-soft); font-size: 16px; line-height: 1.65; margin: 0 0 30px; }
+
+  .btn {
+    display: inline-block;
+    width: 100%;
+    background: var(--pink);
+    color: #000;
+    border: 1px solid var(--pink-border);
+    border-radius: 24px;
+    padding: 16px 20px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+  .btn:hover { background: #f2bcf4; transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+  .small-note { font-size: 13px; color: var(--text-soft); margin-top: 16px; }
+
+  /* Question screens */
+  .q-label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--purple); font-weight: 700; margin-bottom: 10px; }
+  .q-title { font-size: 23px; margin-bottom: 24px; line-height: 1.35; }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    text-align: left;
+    background: #fff;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    padding: 16px 18px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--cream-text);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .option:hover { border-color: var(--pink); }
+  .option.selected { border-color: var(--purple); background: #f6eefb; }
+  .option:disabled { cursor: default; }
+
+  /* Swatch-style options (color question) */
+  .options.swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .option.swatch { display: flex; align-items: center; gap: 10px; padding: 12px 14px; font-size: 13.5px; }
+  .swatch-dot { width: 22px; height: 22px; border-radius: 50%; flex: none; border: 1px solid rgba(0,0,0,0.15); }
+
+  /* Loading transition (between last question and result) */
+  #screen-loading { text-align: center; padding: 40px 0; }
+  #screen-loading .big-spinner {
+    width: 36px; height: 36px; margin: 0 auto 18px;
+    border: 3px solid rgba(28,28,28,0.15);
+    border-top-color: var(--purple);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  #screen-loading p { color: var(--text-soft); font-size: 15px; margin: 0; font-style: italic; font-family: 'Merriweather', Georgia, serif; }
+
+  .hp { position: absolute; left: -9999px; top: -9999px; }
+  .form-error { color: #a4353f; font-size: 13px; margin: 8px 0 0; min-height: 16px; }
+
+  /* Optional save-result opt-in (shown on the result screen, not gating it) */
+  .save-result {
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+  }
+  .save-result p { font-size: 14px; line-height: 1.55; margin: 0 0 12px; color: var(--cream-text); }
+  .save-form { display: flex; gap: 8px; }
+  .save-form input[type="email"] {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 2px solid rgba(28,28,28,0.15);
+    font-family: inherit;
+    font-size: 14.5px;
+    background: var(--cream);
+    color: var(--cream-text);
+  }
+  .save-form input[type="email"]:focus { outline: none; border-color: var(--pink); }
+  .save-form button {
+    flex: none;
+    background: var(--purple);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 0 18px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 13.5px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .save-form button:hover { opacity: 0.9; }
+  .save-form button:disabled { opacity: 0.55; cursor: not-allowed; }
+  .save-success {
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 18px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--cream-text);
+    text-align: center;
+  }
+
+  @media (max-width: 480px) {
+    .save-form { flex-direction: column; }
+    .save-form button { padding: 12px 18px; }
+  }
+
+  /* Result screen */
+  #screen-result .result-eyebrow { text-align: center; font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--purple); font-weight: 700; margin-bottom: 10px; }
+  #screen-result h2 { text-align: center; font-size: 34px; margin-bottom: 4px; }
+  #screen-result .subtitle { text-align: center; color: var(--text-soft); font-size: 14px; font-style: italic; margin-bottom: 22px; font-family: 'Merriweather', Georgia, serif; }
+  #screen-result .hook {
+    font-family: 'Merriweather', Georgia, serif;
+    font-size: 19px;
+    line-height: 1.5;
+    text-align: center;
+    margin: 0 0 18px;
+  }
+  #screen-result .why { font-size: 15.5px; line-height: 1.7; margin-bottom: 18px; }
+  #screen-result .how { background: #fff; border-radius: 14px; padding: 18px 20px; margin-bottom: 26px; }
+  #screen-result .how strong { display: block; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-soft); margin-bottom: 8px; }
+  #screen-result .how span { font-size: 15px; line-height: 1.65; }
+
+  /* Live in-stock product cards */
+  .live-products { margin-bottom: 22px; }
+  .live-products-label { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-soft); font-weight: 700; margin-bottom: 10px; }
+  .live-products-grid { display: flex; flex-direction: column; gap: 8px; }
+  .product-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 10px 14px;
+    text-decoration: none;
+    color: var(--cream-text);
+    transition: transform 0.15s ease;
+  }
+  .product-card:hover { transform: translateY(-1px); }
+  .product-card img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; flex: none; background: var(--cream); }
+  .product-card .pc-info { min-width: 0; flex: 1; }
+  .product-card .pc-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .product-card .pc-price { font-size: 13px; color: var(--text-soft); }
+  .product-card .pc-arrow { font-size: 15px; color: var(--purple); flex: none; }
+
+  .shop-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    background: var(--pink);
+    border: 1px solid var(--pink-border);
+    color: #000;
+    padding: 17px 20px;
+    border-radius: 24px;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    box-shadow: 0 14px 30px -12px rgba(236, 166, 239, 0.65);
+  }
+  .shop-btn:hover { background: #f2bcf4; }
+
+  .retake { display: block; text-align: center; margin-top: 18px; font-size: 13.5px; color: var(--text-soft); text-decoration: underline; cursor: pointer; background: none; border: none; font-family: inherit; }
+
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2.5px solid rgba(0,0,0,0.25); border-top-color: #000; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: -3px; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  [hidden] { display: none !important; }
+
+  @media (max-width: 480px) {
+    .card { padding: 32px 24px; border-radius: 18px; }
+    #screen-intro h1 { font-size: 27px; }
+    #screen-result h2 { font-size: 28px; }
+    .options.swatch-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="brand">
+    <img src="https://www.mooncatcrystals.com/cdn/shop/files/logo-mooncat.png?v=1729612271&width=200" alt="Mooncat Crystals">
+  </div>
+
+  <div class="card" id="card">
+
+    <!-- INTRO -->
+    <div id="screen-intro">
+      <h1>Find Your Crystal</h1>
+      <p>New to crystals, or just not sure where to start? Answer a few honest questions and we'll match you with the crystal that actually fits where you are right now — and exactly how to work with it.</p>
+      <button class="btn" id="start-btn">Start the Quiz</button>
+      <p class="small-note">Takes about a minute ✨</p>
+    </div>
+
+    <!-- QUESTIONS -->
+    <div id="screen-question" hidden>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="q-label" id="q-label"></div>
+      <div class="q-title" id="q-title"></div>
+      <div class="options" id="q-options"></div>
+    </div>
+
+    <!-- LOADING (brief transition while live products load — no email required) -->
+    <div id="screen-loading" hidden>
+      <div class="big-spinner"></div>
+      <p>Finding your match...</p>
+    </div>
+
+    <!-- RESULT -->
+    <div id="screen-result" hidden>
+      <div class="result-eyebrow">Your Crystal Match</div>
+      <h2 id="result-name"></h2>
+      <div class="subtitle" id="result-tagline"></div>
+      <p class="hook" id="result-hook"></p>
+      <div class="why" id="result-why"></div>
+
+      <div class="live-products" id="result-products" hidden>
+        <div class="live-products-label">Available Right Now</div>
+        <div class="live-products-grid" id="result-products-grid"></div>
+      </div>
+
+      <a class="shop-btn" id="result-shop" href="#" target="_blank" rel="noopener">Shop →</a>
+
+      <div class="how">
+        <strong>How to use it</strong>
+        <span id="result-how"></span>
+      </div>
+
+      <!-- Optional, non-blocking — shopping already happened above -->
+      <div class="save-result" id="save-result">
+        <p id="save-copy">Want this result + tips for working with it sent to your inbox?</p>
+        <form id="save-form" class="save-form">
+          <input type="email" id="save-email" autocomplete="email" placeholder="you@email.com" required>
+          <input type="text" id="save-hp" class="hp" tabindex="-1" autocomplete="off">
+          <button type="submit" id="save-btn">Email Me This</button>
+        </form>
+        <div class="form-error" id="save-error"></div>
+      </div>
+      <div class="save-success" id="save-success" hidden>✓ Sent — check your inbox.</div>
+
+      <button class="retake" id="retake-btn">Retake the quiz</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+
+  // ---------------------------------------------------------------
+  // 1. CRYSTAL OUTCOMES — the fixed set this quiz can ever recommend.
+  //    Each links to a live Shopify collection (not a single product)
+  //    so it always reflects current stock with zero upkeep.
+  //    `theme` drives which Flodesk theme-segment + nurture track
+  //    the subscriber lands in (see netlify/functions/quiz-submit.js).
+  // ---------------------------------------------------------------
+  var CRYSTALS = {
+    rose_quartz: {
+      name: "Rose Quartz",
+      tagline: "The Heart Thaw",
+      theme: "heart_self_love",
+      hook: "You're not too much. You're not too sensitive. You're just tired of armoring up.",
+      why: "Rose Quartz doesn't ask you to get over it — it asks you to feel it, gently, without judgment. This is the stone for reparenting your own heart, for looking in the mirror and meaning it when you say “I love you anyway.”",
+      how: "Sleep with it under your pillow tonight. Hold it in the moments you'd normally brace instead of soften. Let it witness you choosing gentleness over armor.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/rose-quartz"
+    },
+    amethyst: {
+      name: "Amethyst",
+      tagline: "The Exhale",
+      theme: "calm_clarity",
+      hook: "Your mind hasn't stopped racing in days. Maybe weeks.",
+      why: "Amethyst is what quiet actually feels like — not the absence of noise, but a peace loud enough to drown it out. This is the stone you reach for when “just relax” has stopped working.",
+      how: "Hold it during the three minutes before sleep when your brain won't shut up. Keep it by your bed and let it do the calming your willpower can't.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/amethyst-collection"
+    },
+    citrine: {
+      name: "Citrine",
+      tagline: "The Ignition",
+      theme: "confidence_abundance",
+      hook: "You can feel it — you're standing right at the edge of something bigger.",
+      why: "Citrine doesn't wait for permission. It's the stone of the person who stops asking “what if” and starts asking “why not me.” This is your sign to stop shrinking.",
+      how: "Hold it before the pitch, the launch, the ask. Keep it where you set goals, and let it remind you that wanting more isn't greedy — it's honest.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/citrine"
+    },
+    black_tourmaline: {
+      name: "Black Tourmaline",
+      tagline: "The Line You Draw",
+      theme: "protection_boundaries",
+      hook: "You already know what's been draining your energy. You're just ready to stop absorbing it.",
+      why: "Black Tourmaline isn't about walls — it's about finally having a spine. This is the stone for the version of you that stops apologizing for having limits.",
+      how: "Carry it in your bag on days you know will test you. Set it by your front door and let it absorb what isn't yours to carry.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/black-tourmaline"
+    },
+    selenite: {
+      name: "Selenite",
+      tagline: "The Reset",
+      theme: "calm_clarity",
+      hook: "Everything feels heavy and you can't even point to why.",
+      why: "Selenite clears the static — the stuck energy, the mental fog, the residue you've been dragging around without noticing. This is the reset button you didn't know you were allowed to press.",
+      how: "Sweep it over your body, head to feet, when things feel thick. Keep a piece on your desk or altar to keep the air — and your head — clear.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/selenite"
+    },
+    carnelian: {
+      name: "Carnelian",
+      tagline: "The Match Strike",
+      theme: "motivation_action",
+      hook: "You know exactly what you want to do. You just haven't done it yet.",
+      why: "Carnelian is not a gentle stone. It's fire, motion, the shove you need to stop overthinking and just move. This is for breaking the freeze.",
+      how: "Hold it right before you do the thing you've been avoiding. Keep it somewhere you'll see it every single morning.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/carnelian"
+    },
+    moonstone: {
+      name: "Moonstone",
+      tagline: "The In-Between",
+      theme: "intuition_transformation",
+      hook: "You're not who you were, and you're not sure who you're becoming yet — and that's the whole point.",
+      why: "Moonstone doesn't rush the in-between. It softens it. This is the stone for trusting a plan you can't fully see yet, one cycle at a time.",
+      how: "Sleep with it under your pillow. Hold it on the full or new moon, and let it remind you that not knowing yet isn't the same as being lost.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/moonstone"
+    },
+    labradorite: {
+      name: "Labradorite",
+      tagline: "The Threshold",
+      theme: "intuition_transformation",
+      hook: "You're stepping through a door and there's no going back to who you were before it.",
+      why: "Labradorite is protection for the parts of you mid-transformation — the parts still a little exposed. This is the stone for becoming, in real time, without losing yourself in the process.",
+      how: "Wear it during the transition — the move, the new job, the reinvention. Hold it while you decide, out loud, who you're becoming.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/labradorite"
+    },
+    clear_quartz: {
+      name: "Clear Quartz",
+      tagline: "The Amplifier",
+      theme: "calm_clarity",
+      hook: "You don't need a new crystal. You need the one that makes everything else work harder.",
+      why: "Clear Quartz is the master stone — it takes whatever intention you set and turns the volume all the way up. This is for the person ready to stop guessing and start manifesting on purpose.",
+      how: "Hold it while you set intentions or work with your other crystals. Program it, cleanse it, and let it carry whatever you ask of it.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/quartz-1"
+    },
+    tigers_eye: {
+      name: "Tiger's Eye",
+      tagline: "The Follow-Through",
+      theme: "confidence_abundance",
+      hook: "Starting was never your problem. Finishing is.",
+      why: "Tiger's Eye is grounded willpower — the courage to keep showing up after the initial spark fades. This is the stone for the version of you that doesn't quit in week two.",
+      how: "Keep it on your desk during the grind part of the goal. Hold it when motivation runs out and discipline has to take over.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/tigers-eye"
+    },
+    smoky_quartz: {
+      name: "Smoky Quartz",
+      tagline: "The Release",
+      theme: "protection_boundaries",
+      hook: "You've been carrying something heavy for way longer than you should have.",
+      why: "Smoky Quartz doesn't sugarcoat the hard emotions — it helps you actually move them out instead of stuffing them down. This is the stone for the exhale after you finally put it down.",
+      how: "Hold it while you name — out loud or in your head — what you're ready to release. Keep it nearby whenever you need to let something go without carrying it a step further.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/smoky-quartz"
+    },
+    green_aventurine: {
+      name: "Green Aventurine",
+      tagline: "The Opening",
+      theme: "confidence_abundance",
+      hook: "You're due for a win. An easy one, for once.",
+      why: "Green Aventurine is quiet, steady luck — the stone for when you're ready to stop forcing things and let opportunity find you instead. This is for softening your grip so more can actually get in.",
+      how: "Carry it when you're trying something new or taking a chance. Keep it near your front door to invite in what's meant for you.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/green-aventurine"
+    },
+    malachite: {
+      name: "Malachite",
+      tagline: "The Deep Shift",
+      theme: "intuition_transformation",
+      hook: "You're not interested in a small fix. You want the pattern gone for good.",
+      why: "Malachite doesn't do surface-level. It goes straight for the root — the old belief, the repeated cycle, the thing you keep circling back to. This is the stone for people who are done managing the symptom.",
+      how: "Work with it slowly and intentionally — during journaling, therapy prep, or deep reflection. This one asks you to actually look.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/malachite"
+    },
+    pyrite: {
+      name: "Pyrite",
+      tagline: "The Fortress",
+      theme: "confidence_abundance",
+      hook: "You're building something real, and you're done letting anything get in its way.",
+      why: "Pyrite is abundance with armor — it protects your energy, your goals, and your money the same way it guards its own shine. This is the stone for people done being taken advantage of while they build.",
+      how: "Keep it on your desk, in your workspace, or near where money conversations happen. Let it remind you that protecting your abundance isn't paranoid — it's smart.",
+      shopUrl: "https://www.mooncatcrystals.com/collections/pyrite"
+    }
+  };
+
+  // Human-readable theme names (used nowhere in the UI right now, kept
+  // here so the mapping is self-documenting when read alongside quiz-submit.js)
+  var THEME_NAMES = {
+    heart_self_love: "Self-Love & Heart",
+    calm_clarity: "Calm & Clarity",
+    confidence_abundance: "Confidence & Abundance",
+    protection_boundaries: "Protection & Boundaries",
+    motivation_action: "Motivation & Action",
+    intuition_transformation: "Intuition & Transformation"
+  };
+
+  // Fixed tie-break order — first crystal in this list wins a tied score.
+  var TIE_BREAK_ORDER = [
+    "rose_quartz", "amethyst", "citrine", "black_tourmaline", "selenite",
+    "carnelian", "moonstone", "labradorite", "clear_quartz", "tigers_eye",
+    "smoky_quartz", "green_aventurine", "malachite", "pyrite"
+  ];
+
+  // ---------------------------------------------------------------
+  // 2. QUESTIONS — deterministic scored decision tree. No AI involved.
+  //
+  //    Every crystal needs at least one EXCLUSIVE (not shared with
+  //    theme-mates) high-point option somewhere outside the color
+  //    question, or the result quietly collapses into "whichever one
+  //    they picked the color for" for any two crystals in the same
+  //    theme (e.g. Citrine/Pyrite/Green Aventurine/Tiger's Eye were
+  //    all indistinguishable except by color before Q4 was rewritten
+  //    below). Q1 and Q3 stay broad/atmospheric on purpose — Q4 is the
+  //    one that has to carry hard disambiguation, so keep its options
+  //    exclusive when adding to it.
+  // ---------------------------------------------------------------
+  var QUESTIONS = [
+    {
+      title: "What are you craving most right now?",
+      options: [
+        { text: "Calm, clarity, and a clear head", points: { amethyst: 2, selenite: 2, clear_quartz: 2 } },
+        { text: "Confidence, momentum, and abundance", points: { citrine: 2, pyrite: 1, green_aventurine: 1, tigers_eye: 1 } },
+        { text: "Protection and stronger boundaries", points: { black_tourmaline: 3, smoky_quartz: 1 } },
+        { text: "Self-love and a softer heart", points: { rose_quartz: 3 } },
+        { text: "Motivation to actually take action", points: { carnelian: 3 } },
+        { text: "Clarity on a big change or transition", points: { moonstone: 2, labradorite: 2, malachite: 1 } }
+      ]
+    },
+    {
+      title: "Pick the color pulling at you most.",
+      layout: "swatch",
+      options: [
+        { text: "Soft pink", color: "#e8b4c4", points: { rose_quartz: 3 } },
+        { text: "Deep violet", color: "#7c5ba6", points: { amethyst: 3 } },
+        { text: "Icy, clear white", color: "#eef1f5", points: { selenite: 3 } },
+        { text: "Perfectly clear, like glass", color: "#d9e7e6", points: { clear_quartz: 3 } },
+        { text: "Sunny gold", color: "#e8b923", points: { citrine: 3 } },
+        { text: "Metallic gold", color: "#b8963f", points: { pyrite: 3 } },
+        { text: "Fresh green", color: "#7fa66b", points: { green_aventurine: 3 } },
+        { text: "Deep swirling green", color: "#2e5c3e", points: { malachite: 3 } },
+        { text: "Midnight black", color: "#1a1a1a", points: { black_tourmaline: 3 } },
+        { text: "Smoky brown-grey", color: "#6b5d54", points: { smoky_quartz: 3 } },
+        { text: "Golden brown shimmer", color: "#a67c3d", points: { tigers_eye: 3 } },
+        { text: "Fiery orange", color: "#d9702e", points: { carnelian: 3 } },
+        { text: "Glowy moonlit white", color: "#dcd6e8", points: { moonstone: 3 } },
+        { text: "Stormy blue-grey shimmer", color: "#5b6b7a", points: { labradorite: 3 } }
+      ]
+    },
+    {
+      title: "What's going on in your life right now?",
+      options: [
+        { text: "I'm burnt out and overstimulated", points: { amethyst: 2, selenite: 2 } },
+        { text: "I keep giving my energy to people or things that drain me", points: { black_tourmaline: 3 } },
+        { text: "I'm working on loving myself again", points: { rose_quartz: 3 } },
+        { text: "I'm building something — money, a business, a goal", points: { citrine: 2, pyrite: 2, tigers_eye: 1 } },
+        { text: "I need courage to take the next step", points: { carnelian: 3 } },
+        { text: "I'm in a big transition and want to trust the process", points: { moonstone: 2, labradorite: 2 } },
+        { text: "I'm done managing the same pattern — I want it gone for good", points: { malachite: 3 } },
+        { text: "I'm ready to stop forcing things and let opportunity come to me", points: { green_aventurine: 3 } },
+        { text: "Everything feels heavy and I need to release something", points: { smoky_quartz: 3 } },
+        { text: "I want one crystal that amplifies everything else I'm doing", points: { clear_quartz: 3 } }
+      ]
+    },
+    {
+      // The disambiguator. Every option is exclusive to exactly one
+      // crystal so theme-mates (e.g. the four confidence/abundance
+      // stones) actually get separated instead of tying.
+      title: "If you're honest, what do you need most right now?",
+      options: [
+        { text: "To turn the volume down on my anxious thoughts", points: { amethyst: 3 } },
+        { text: "To clear the heaviness stuck in my head or my space", points: { selenite: 3 } },
+        { text: "One thing that sharpens my focus and makes my intentions stick", points: { clear_quartz: 3 } },
+        { text: "To finally say “why not me” and go for it", points: { citrine: 3 } },
+        { text: "To protect what I'm building while I build it", points: { pyrite: 3 } },
+        { text: "To stop forcing things and let ease back in", points: { green_aventurine: 3 } },
+        { text: "To keep showing up after the excitement fades", points: { tigers_eye: 3 } },
+        { text: "To feel steady while everything around me changes", points: { moonstone: 3 } },
+        { text: "To feel brave enough to become who I'm changing into", points: { labradorite: 3 } },
+        { text: "To let go of a pattern I keep repeating, for good", points: { malachite: 3 } }
+      ]
+    }
+  ];
+
+  // Non-scoring metadata questions, asked after the scored ones.
+  // `field` is where the answer's value gets stored in state.meta.
+  // formPreference doesn't touch which CRYSTAL you get — it tells
+  // crystal-products.js which of the matched crystal's real in-stock
+  // pieces to put first (a ring first for someone who wants jewelry,
+  // a tower first for someone who wants a display piece), so the
+  // *specific product* recommended is sharper too, not just the type.
+  var META_QUESTIONS = [
+    {
+      field: "formPreference",
+      title: "How do you actually want to use this crystal?",
+      options: [
+        { text: "Wear it — I want it on me, always", value: "jewelry" },
+        { text: "Carry it with me — pocket, bag, wherever I go", value: "carry" },
+        { text: "Keep it in my space — something I see every day", value: "space" },
+        { text: "Work with it directly — meditation, ritual, intention-setting", value: "ritual" }
+      ]
+    },
+    {
+      field: "experienceLevel",
+      title: "How would you describe where you're at with crystals?",
+      options: [
+        { text: "Totally new — I don't know where to start", value: "beginner" },
+        { text: "I have a few, but I'm still learning", value: "some_experience" },
+        { text: "I've been doing this a while — I know what I like", value: "experienced" }
+      ]
+    }
+  ];
+
+  // ---------------------------------------------------------------
+  // State + navigation
+  // ---------------------------------------------------------------
+  var state = { qIndex: 0, scores: {}, resultKey: null, meta: {} };
+  Object.keys(CRYSTALS).forEach(function (k) { state.scores[k] = 0; });
+
+  var TOTAL_STEPS = QUESTIONS.length + META_QUESTIONS.length;
+
+  var card = document.getElementById("card");
+  var screens = {
+    intro: document.getElementById("screen-intro"),
+    question: document.getElementById("screen-question"),
+    loading: document.getElementById("screen-loading"),
+    result: document.getElementById("screen-result")
+  };
+
+  function showScreen(name) {
+    Object.keys(screens).forEach(function (k) { screens[k].hidden = (k !== name); });
+  }
+
+  function fadeSwap(fn) {
+    card.classList.add("fading");
+    setTimeout(function () {
+      fn();
+      card.classList.remove("fading");
+    }, 200);
+  }
+
+  document.getElementById("start-btn").addEventListener("click", function () {
+    fadeSwap(function () {
+      state.qIndex = 0;
+      renderQuestion();
+      showScreen("question");
+    });
+  });
+
+  function renderQuestion() {
+    var optionsEl = document.getElementById("q-options");
+    optionsEl.classList.remove("swatch-grid");
+
+    var stepLabel = (state.qIndex === TOTAL_STEPS - 1)
+      ? "Last one"
+      : "Question " + (state.qIndex + 1) + " of " + TOTAL_STEPS;
+    document.getElementById("q-label").textContent = stepLabel;
+    document.getElementById("progress-fill").style.width = Math.round((state.qIndex / TOTAL_STEPS) * 100) + "%";
+
+    if (state.qIndex < QUESTIONS.length) {
+      var q = QUESTIONS[state.qIndex];
+      document.getElementById("q-title").textContent = q.title;
+
+      optionsEl.innerHTML = "";
+      if (q.layout === "swatch") optionsEl.classList.add("swatch-grid");
+
+      q.options.forEach(function (opt) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = q.layout === "swatch" ? "option swatch" : "option";
+        if (q.layout === "swatch") {
+          var dot = document.createElement("span");
+          dot.className = "swatch-dot";
+          dot.style.background = opt.color;
+          btn.appendChild(dot);
+          var label = document.createElement("span");
+          label.textContent = opt.text;
+          btn.appendChild(label);
+        } else {
+          btn.textContent = opt.text;
+        }
+        btn.addEventListener("click", function () { handleAnswer(opt, btn); });
+        optionsEl.appendChild(btn);
+      });
+    } else {
+      var metaQ = META_QUESTIONS[state.qIndex - QUESTIONS.length];
+      document.getElementById("q-title").textContent = metaQ.title;
+
+      optionsEl.innerHTML = "";
+      metaQ.options.forEach(function (opt) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "option";
+        btn.textContent = opt.text;
+        btn.addEventListener("click", function () { handleMetaAnswer(metaQ, opt, btn); });
+        optionsEl.appendChild(btn);
+      });
+    }
+  }
+
+  function handleAnswer(opt, btnEl) {
+    btnEl.classList.add("selected");
+    Array.prototype.forEach.call(document.getElementById("q-options").children, function (b) { b.disabled = true; });
+
+    Object.keys(opt.points).forEach(function (crystalKey) {
+      state.scores[crystalKey] += opt.points[crystalKey];
+    });
+
+    setTimeout(function () {
+      fadeSwap(function () {
+        state.qIndex += 1;
+        renderQuestion();
+      });
+    }, 250);
+  }
+
+  function handleMetaAnswer(metaQ, opt, btnEl) {
+    btnEl.classList.add("selected");
+    Array.prototype.forEach.call(document.getElementById("q-options").children, function (b) { b.disabled = true; });
+    state.meta[metaQ.field] = opt.value;
+
+    setTimeout(function () {
+      fadeSwap(function () {
+        state.qIndex += 1;
+        if (state.qIndex < TOTAL_STEPS) {
+          renderQuestion();
+        } else {
+          document.getElementById("progress-fill").style.width = "100%";
+          finishQuiz();
+        }
+      });
+    }, 250);
+  }
+
+  function calculateResult() {
+    var best = null, bestScore = -1;
+    TIE_BREAK_ORDER.forEach(function (key) {
+      if (state.scores[key] > bestScore) {
+        bestScore = state.scores[key];
+        best = key;
+      }
+    });
+    state.resultKey = best;
+  }
+
+  // ---------------------------------------------------------------
+  // Result reveal — no email required. The quiz's job is to get
+  // someone shopping, not to gate the payoff behind an opt-in. Live
+  // products load right away; email capture (below) is a separate,
+  // optional ask on the result screen itself for people who want the
+  // result saved/emailed to them.
+  // ---------------------------------------------------------------
+  function finishQuiz() {
+    calculateResult();
+    showScreen("loading");
+
+    var result = CRYSTALS[state.resultKey];
+    var collectionHandle = result.shopUrl.split("/collections/")[1];
+    var productsUrl = "/.netlify/functions/crystal-products?handle=" + encodeURIComponent(collectionHandle) +
+      "&form=" + encodeURIComponent(state.meta.formPreference || "");
+
+    var productsPromise = fetch(productsUrl)
+      .then(function (r) { return r.ok ? r.json() : { products: [] }; })
+      .catch(function (err) {
+        console.warn("Live product lookup failed:", err);
+        return { products: [] };
+      });
+
+    // A slow/hanging function should never strand someone on the loading
+    // screen — after 3s, reveal with whatever we have (likely nothing yet,
+    // which just means the plain collection-link fallback shows instead).
+    var timeoutFallback = new Promise(function (resolve) {
+      setTimeout(function () { resolve({ products: [] }); }, 3000);
+    });
+
+    Promise.race([productsPromise, timeoutFallback]).then(function (productsData) {
+      fadeSwap(function () {
+        renderResult((productsData && productsData.products) || []);
+        showScreen("result");
+      });
+    });
+  }
+
+  // ---------------------------------------------------------------
+  // Optional "save my result" opt-in — lives on the result screen,
+  // fires only if someone chooses to submit it. This is the only
+  // place Flodesk tagging happens now.
+  // ---------------------------------------------------------------
+  document.getElementById("save-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var errorEl = document.getElementById("save-error");
+    errorEl.textContent = "";
+
+    var email = document.getElementById("save-email").value.trim();
+    var honeypot = document.getElementById("save-hp").value;
+
+    if (honeypot) { return; } // bot caught silently
+
+    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      errorEl.textContent = "Please enter a valid email address.";
+      return;
+    }
+
+    var saveBtn = document.getElementById("save-btn");
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span class="spinner"></span>';
+
+    var result = CRYSTALS[state.resultKey];
+
+    fetch("/.netlify/functions/quiz-submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email,
+        resultKey: state.resultKey,
+        crystalName: result.name,
+        themeKey: result.theme,
+        themeName: THEME_NAMES[result.theme],
+        experienceLevel: state.meta.experienceLevel,
+        formPreference: state.meta.formPreference
+      })
+    }).then(function (r) {
+      if (!r.ok) throw new Error("Submit failed");
+      document.getElementById("save-result").hidden = true;
+      document.getElementById("save-success").hidden = false;
+    }).catch(function (err) {
+      console.warn("Save result failed:", err);
+      errorEl.textContent = "Something went wrong — mind trying again?";
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = "Email Me This";
+    });
+  });
+
+  function renderResult(liveProducts) {
+    var result = CRYSTALS[state.resultKey];
+    document.getElementById("result-name").textContent = result.name;
+    document.getElementById("result-tagline").textContent = result.tagline;
+    document.getElementById("result-hook").textContent = result.hook;
+    document.getElementById("result-why").textContent = result.why;
+    document.getElementById("result-how").textContent = result.how;
+
+    var shopBtn = document.getElementById("result-shop");
+    shopBtn.href = result.shopUrl;
+
+    var productsSection = document.getElementById("result-products");
+    var productsGrid = document.getElementById("result-products-grid");
+    productsGrid.innerHTML = "";
+
+    if (liveProducts && liveProducts.length > 0) {
+      liveProducts.forEach(function (p) {
+        var card = document.createElement("a");
+        card.className = "product-card";
+        card.href = p.url;
+        card.target = "_blank";
+        card.rel = "noopener";
+
+        var img = document.createElement("img");
+        img.src = p.image || "";
+        img.alt = p.imageAlt || p.title;
+        card.appendChild(img);
+
+        var info = document.createElement("div");
+        info.className = "pc-info";
+        var title = document.createElement("div");
+        title.className = "pc-title";
+        title.textContent = p.title;
+        var price = document.createElement("div");
+        price.className = "pc-price";
+        price.textContent = "$" + parseFloat(p.price).toFixed(2);
+        info.appendChild(title);
+        info.appendChild(price);
+        card.appendChild(info);
+
+        var arrow = document.createElement("span");
+        arrow.className = "pc-arrow";
+        arrow.textContent = "→";
+        card.appendChild(arrow);
+
+        productsGrid.appendChild(card);
+      });
+      productsSection.hidden = false;
+      shopBtn.textContent = "See All " + result.name + " →";
+    } else {
+      productsSection.hidden = true;
+      shopBtn.textContent = "Shop " + result.name + " →";
+    }
+  }
+
+  document.getElementById("retake-btn").addEventListener("click", function () {
+    fadeSwap(function () {
+      state.qIndex = 0;
+      state.resultKey = null;
+      state.meta = {};
+      Object.keys(CRYSTALS).forEach(function (k) { state.scores[k] = 0; });
+
+      document.getElementById("save-form").reset();
+      document.getElementById("save-error").textContent = "";
+      document.getElementById("save-result").hidden = false;
+      document.getElementById("save-success").hidden = true;
+      var saveBtn = document.getElementById("save-btn");
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = "Email Me This";
+
+      showScreen("intro");
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>
