@@ -502,8 +502,11 @@
   //    crystal from the chosen group.
   //
   //    Every crystal gets exactly one option in each of questions 2-4.
-  //    If those three answers point to three different crystals, the
-  //    "need most" answer (question 4, marked decides: true) wins.
+  //    Weights: question 1 adds 1 point inside the group (when the
+  //    answer is more specific than the group), color adds 1, "life right
+  //    now" adds 3, "need most" adds 3 and wins ties (decides: true). So
+  //    questions 3 and 4 carry the result, and when they disagree, the
+  //    smaller answers (craving, color) tip it.
   //    When adding a crystal: put it in a group below, then give it
   //    one option in each of questions 2, 3 and 4.
   // ---------------------------------------------------------------
@@ -519,32 +522,32 @@
       title: "What are you craving most right now?",
       options: [
         { text: "Calm, clarity, and a clear head", group: "calm", points: {} },
-        { text: "Confidence, momentum, and abundance", group: "drive", points: {} },
+        { text: "Confidence, momentum, and abundance", group: "drive", points: { citrine: 1, pyrite: 1, tigers_eye: 1 } },
         { text: "Motivation to actually take action", group: "drive", points: { carnelian: 1 } },
         { text: "Protection and stronger boundaries", group: "protect", points: {} },
         { text: "Self-love and a softer heart", group: "heart", points: { rose_quartz: 1 } },
-        { text: "Clarity on a big change or transition", group: "heart", points: {} }
+        { text: "Clarity on a big change or transition", group: "heart", points: { moonstone: 1, labradorite: 1, malachite: 1 } }
       ]
     },
     {
       title: "Pick the color pulling at you most.",
       layout: "swatch",
       options: [
-        { text: "Deep violet", color: "#7c5ba6", points: { amethyst: 3 } },
-        { text: "Icy, clear white", color: "#eef1f5", points: { selenite: 3 } },
-        { text: "Perfectly clear, like glass", color: "#d9e7e6", points: { clear_quartz: 3 } },
-        { text: "Purple fading into sea green", color: "#8e86bf", points: { fluorite: 3 } },
-        { text: "Sunny gold", color: "#e8b923", points: { citrine: 3 } },
-        { text: "Metallic gold", color: "#b8963f", points: { pyrite: 3 } },
-        { text: "Golden brown shimmer", color: "#a67c3d", points: { tigers_eye: 3 } },
-        { text: "Fiery orange", color: "#d9702e", points: { carnelian: 3 } },
-        { text: "Midnight black", color: "#1a1a1a", points: { black_tourmaline: 3 } },
-        { text: "Smoky brown-grey", color: "#6b5d54", points: { smoky_quartz: 3 } },
-        { text: "Glossy black glass", color: "#0b0b10", points: { obsidian: 3 } },
-        { text: "Soft pink", color: "#e8b4c4", points: { rose_quartz: 3 } },
-        { text: "Glowy moonlit white", color: "#dcd6e8", points: { moonstone: 3 } },
-        { text: "Stormy blue-grey shimmer", color: "#5b6b7a", points: { labradorite: 3 } },
-        { text: "Deep swirling green", color: "#2e5c3e", points: { malachite: 3 } }
+        { text: "Deep violet", color: "#7c5ba6", points: { amethyst: 1 } },
+        { text: "Icy, clear white", color: "#eef1f5", points: { selenite: 1 } },
+        { text: "Perfectly clear, like glass", color: "#d9e7e6", points: { clear_quartz: 1 } },
+        { text: "Purple fading into sea green", color: "#8e86bf", points: { fluorite: 1 } },
+        { text: "Sunny gold", color: "#e8b923", points: { citrine: 1 } },
+        { text: "Metallic gold", color: "#b8963f", points: { pyrite: 1 } },
+        { text: "Golden brown shimmer", color: "#a67c3d", points: { tigers_eye: 1 } },
+        { text: "Fiery orange", color: "#d9702e", points: { carnelian: 1 } },
+        { text: "Midnight black", color: "#1a1a1a", points: { black_tourmaline: 1 } },
+        { text: "Smoky brown-grey", color: "#6b5d54", points: { smoky_quartz: 1 } },
+        { text: "Glossy black glass", color: "#0b0b10", points: { obsidian: 1 } },
+        { text: "Soft pink", color: "#e8b4c4", points: { rose_quartz: 1 } },
+        { text: "Glowy moonlit white", color: "#dcd6e8", points: { moonstone: 1 } },
+        { text: "Stormy blue-grey shimmer", color: "#5b6b7a", points: { labradorite: 1 } },
+        { text: "Deep swirling green", color: "#2e5c3e", points: { malachite: 1 } }
       ]
     },
     {
