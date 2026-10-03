@@ -648,7 +648,7 @@
   // ---------------------------------------------------------------
   // State + navigation
   // ---------------------------------------------------------------
-  var state = { qIndex: 0, scores: {}, resultKey: null, meta: {}, group: null, decider: null };
+  var state = { qIndex: 0, scores: {}, resultKey: null, meta: {}, group: null, decider: null, picks: [] };
   Object.keys(CRYSTALS).forEach(function (k) { state.scores[k] = 0; });
 
   var TOTAL_STEPS = QUESTIONS.length + META_QUESTIONS.length;
@@ -748,6 +748,9 @@
       state.scores[crystalKey] += opt.points[crystalKey];
     });
     if (opt.group) state.group = opt.group;
+    // Which crystal each answer pointed to; the welcome email quotes
+    // questions 2 and 3 back ("You told us ...").
+    state.picks[state.qIndex] = Object.keys(opt.points)[0] || null;
     if (QUESTIONS[state.qIndex].decides) state.decider = Object.keys(opt.points)[0];
 
     setTimeout(function () {
@@ -875,9 +878,8 @@
         firstName: firstName,
         email: email,
         resultKey: state.resultKey,
-        crystalName: result.name,
-        themeKey: result.theme,
-        themeName: THEME_NAMES[result.theme],
+        situationKey: state.picks[1],
+        needKey: state.picks[2],
         experienceLevel: state.meta.experienceLevel,
         formPreference: state.meta.formPreference
       })
@@ -967,6 +969,7 @@
       state.meta = {};
       state.group = null;
       state.decider = null;
+      state.picks = [];
       Object.keys(CRYSTALS).forEach(function (k) { state.scores[k] = 0; });
 
       document.getElementById("save-form").reset();
