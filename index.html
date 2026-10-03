@@ -181,13 +181,41 @@
     text-align: center;
   }
 
+  .save-form input[type="text"] {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 2px solid rgba(28,28,28,0.15);
+    font-family: inherit;
+    font-size: 14.5px;
+    background: var(--cream);
+    color: var(--cream-text);
+  }
+  .save-form input[type="text"]:focus { outline: none; border-color: var(--pink); }
+  .save-form input.hp { position: absolute; left: -9999px; top: -9999px; }
+
+  /* Sign-up screen: shown before the result, always skippable */
+  #screen-signup { position: relative; text-align: center; }
+  #screen-signup .close-x {
+    position: absolute; top: -18px; right: -12px;
+    width: 36px; height: 36px; border: none; background: none;
+    font-size: 26px; line-height: 1; color: var(--text-soft); cursor: pointer;
+  }
+  #screen-signup h2 { font-size: 27px; margin: 6px 0 10px; }
+  #screen-signup .signup-copy { font-size: 15px; line-height: 1.6; color: var(--cream-text); margin: 0 auto 20px; max-width: 420px; }
+  #screen-signup .signup-form { flex-direction: column; text-align: left; }
+  #screen-signup .signup-form button { padding: 14px 18px; font-size: 14.5px; }
+  #screen-signup .skip { display: inline-block; margin-top: 14px; font-size: 13.5px; color: var(--text-soft); text-decoration: underline; cursor: pointer; background: none; border: none; font-family: inherit; }
+  #screen-signup .fine-print { font-size: 12px; color: var(--text-soft); margin: 14px 0 0; }
+
   @media (max-width: 480px) {
     .save-form { flex-direction: column; }
     .save-form button { padding: 12px 18px; }
   }
 
   /* Result screen */
-  #screen-result .result-eyebrow { text-align: center; font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--purple); font-weight: 700; margin-bottom: 10px; }
+  #screen-result .result-eyebrow, #screen-signup .result-eyebrow { text-align: center; font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--purple); font-weight: 700; margin-bottom: 10px; }
   #screen-result h2 { text-align: center; font-size: 34px; margin-bottom: 4px; }
   #screen-result .subtitle { text-align: center; color: var(--text-soft); font-size: 14px; font-style: italic; margin-bottom: 22px; font-family: 'Merriweather', Georgia, serif; }
   #screen-result .hook {
@@ -289,6 +317,22 @@
       <p>Finding your match...</p>
     </div>
 
+    <!-- SIGN-UP (before the result; the X or "No thanks" skips straight to it) -->
+    <div id="screen-signup" hidden>
+      <button type="button" class="close-x" id="signup-close" aria-label="Skip and show my result">&times;</button>
+      <div class="result-eyebrow">Your result is ready</div>
+      <h2>We've found your crystal match</h2>
+      <p class="signup-copy">Want a copy in your inbox? Add your name and email and we'll send your result, plus tips for working with your crystal.</p>
+      <form id="signup-form" class="save-form signup-form">
+        <input type="text" id="signup-name" autocomplete="given-name" placeholder="First name" required>
+        <input type="email" id="signup-email" autocomplete="email" placeholder="you@email.com" required>
+        <input type="text" id="signup-hp" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button type="submit" id="signup-btn">Send It + Show My Result</button>
+      </form>
+      <div class="form-error" id="signup-error"></div>
+      <button type="button" class="skip" id="signup-skip">No thanks, just show my result</button>
+    </div>
+
     <!-- RESULT -->
     <div id="screen-result" hidden>
       <div class="result-eyebrow">Your Crystal Match</div>
@@ -309,17 +353,18 @@
         <span id="result-how"></span>
       </div>
 
-      <!-- Optional, non-blocking — shopping already happened above -->
+      <!-- Second chance for people who skipped the sign-up screen -->
       <div class="save-result" id="save-result">
         <p id="save-copy">Want this result + tips for working with it sent to your inbox?</p>
         <form id="save-form" class="save-form">
+          <input type="text" id="save-name" autocomplete="given-name" placeholder="First name" required>
           <input type="email" id="save-email" autocomplete="email" placeholder="you@email.com" required>
-          <input type="text" id="save-hp" class="hp" tabindex="-1" autocomplete="off">
+          <input type="text" id="save-hp" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
           <button type="submit" id="save-btn">Email Me This</button>
         </form>
         <div class="form-error" id="save-error"></div>
       </div>
-      <div class="save-success" id="save-success" hidden>✓ Sent — check your inbox.</div>
+      <div class="save-success" id="save-success" hidden>✓ You're on the list. Keep an eye on your inbox.</div>
 
       <button class="retake" id="retake-btn">Retake the quiz</button>
     </div>
@@ -635,6 +680,7 @@
     intro: document.getElementById("screen-intro"),
     question: document.getElementById("screen-question"),
     loading: document.getElementById("screen-loading"),
+    signup: document.getElementById("screen-signup"),
     result: document.getElementById("screen-result")
   };
 
@@ -801,35 +847,46 @@
     Promise.race([productsPromise, timeoutFallback]).then(function (productsData) {
       fadeSwap(function () {
         renderResult((productsData && productsData.products) || []);
-        showScreen("result");
+        showScreen("signup");
       });
     });
   }
 
   // ---------------------------------------------------------------
-  // Optional "save my result" opt-in — lives on the result screen,
-  // fires only if someone chooses to submit it. This is the only
-  // place Flodesk tagging happens now.
+  // Email sign-up. Shown on its own screen before the result (always
+  // skippable with the X or "No thanks"), and again as a small form on
+  // the result screen for people who skipped. Both go through
+  // submitSignup(), the only place Flodesk tagging happens.
   // ---------------------------------------------------------------
-  document.getElementById("save-form").addEventListener("submit", function (e) {
-    e.preventDefault();
-    var errorEl = document.getElementById("save-error");
+  function showResult() {
+    fadeSwap(function () { showScreen("result"); window.scrollTo(0, 0); });
+  }
+
+  function markSignedUp() {
+    document.getElementById("save-result").hidden = true;
+    document.getElementById("save-success").hidden = false;
+  }
+
+  function submitSignup(prefix, buttonLabel, onSuccess) {
+    var errorEl = document.getElementById(prefix + "-error");
     errorEl.textContent = "";
 
-    var email = document.getElementById("save-email").value.trim();
-    var honeypot = document.getElementById("save-hp").value;
+    var firstName = document.getElementById(prefix + "-name").value.trim();
+    var email = document.getElementById(prefix + "-email").value.trim();
+    if (document.getElementById(prefix + "-hp").value) { return; } // bot caught silently
 
-    if (honeypot) { return; } // bot caught silently
-
-    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
+    if (!firstName) {
+      errorEl.textContent = "Please add your first name.";
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       errorEl.textContent = "Please enter a valid email address.";
       return;
     }
 
-    var saveBtn = document.getElementById("save-btn");
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = '<span class="spinner"></span>';
+    var btn = document.getElementById(prefix + "-btn");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>';
 
     var result = CRYSTALS[state.resultKey];
 
@@ -837,6 +894,7 @@
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        firstName: firstName,
         email: email,
         resultKey: state.resultKey,
         crystalName: result.name,
@@ -847,14 +905,26 @@
       })
     }).then(function (r) {
       if (!r.ok) throw new Error("Submit failed");
-      document.getElementById("save-result").hidden = true;
-      document.getElementById("save-success").hidden = false;
+      markSignedUp();
+      onSuccess();
     }).catch(function (err) {
-      console.warn("Save result failed:", err);
-      errorEl.textContent = "Something went wrong — mind trying again?";
-      saveBtn.disabled = false;
-      saveBtn.innerHTML = "Email Me This";
+      console.warn("Sign-up failed:", err);
+      errorEl.textContent = "Something went wrong. Try again, or skip and see your result.";
+      btn.disabled = false;
+      btn.textContent = buttonLabel;
     });
+  }
+
+  document.getElementById("signup-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    submitSignup("signup", "Send It + Show My Result", showResult);
+  });
+  document.getElementById("signup-skip").addEventListener("click", showResult);
+  document.getElementById("signup-close").addEventListener("click", showResult);
+
+  document.getElementById("save-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    submitSignup("save", "Email Me This", function () {});
   });
 
   function renderResult(liveProducts) {
@@ -922,7 +992,12 @@
       Object.keys(CRYSTALS).forEach(function (k) { state.scores[k] = 0; });
 
       document.getElementById("save-form").reset();
+      document.getElementById("signup-form").reset();
       document.getElementById("save-error").textContent = "";
+      document.getElementById("signup-error").textContent = "";
+      var signupBtn = document.getElementById("signup-btn");
+      signupBtn.disabled = false;
+      signupBtn.textContent = "Send It + Show My Result";
       document.getElementById("save-result").hidden = false;
       document.getElementById("save-success").hidden = true;
       var saveBtn = document.getElementById("save-btn");
