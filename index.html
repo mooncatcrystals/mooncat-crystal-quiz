@@ -64,7 +64,7 @@
   .progress-fill { height: 100%; background: linear-gradient(90deg, var(--pink), var(--purple)); border-radius: 99px; transition: width 0.4s ease; width: 0%; }
 
   /* Intro screen */
-  #screen-intro { text-align: center; }
+  #screen-intro { position: relative; text-align: center; }
   #screen-intro h1 { font-size: 32px; line-height: 1.25; margin-bottom: 16px; }
   #screen-intro p { color: var(--text-soft); font-size: 16px; line-height: 1.65; margin: 0 0 30px; }
 
@@ -199,11 +199,13 @@
 
   /* Sign-up screen: shown before the result, always skippable */
   #screen-signup { position: relative; text-align: center; }
-  #screen-signup .close-x {
+  .close-x {
     position: absolute; top: -18px; right: -12px;
     width: 36px; height: 36px; border: none; background: none;
-    font-size: 26px; line-height: 1; color: var(--text-soft); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; line-height: 1; color: var(--text-soft); cursor: pointer; text-decoration: none;
   }
+  .close-x:hover { color: var(--cream-text); }
   #screen-signup h2 { font-size: 27px; margin: 6px 0 10px; }
   #screen-signup .signup-copy { font-size: 15px; line-height: 1.6; color: var(--cream-text); margin: 0 auto 12px; max-width: 420px; }
   #screen-signup .signup-perks { text-align: left; max-width: 400px; margin: 0 auto 20px; padding-left: 20px; font-size: 14.5px; line-height: 1.6; color: var(--cream-text); }
@@ -296,13 +298,14 @@
 
 <div class="wrap">
   <div class="brand">
-    <img src="https://www.mooncatcrystals.com/cdn/shop/files/logo-mooncat.png?v=1729612271&width=200" alt="Mooncat Crystals">
+    <a href="https://www.mooncatcrystals.com" aria-label="Back to Mooncat Crystals"><img src="https://www.mooncatcrystals.com/cdn/shop/files/logo-mooncat.png?v=1729612271&width=200" alt="Mooncat Crystals"></a>
   </div>
 
   <div class="card" id="card">
 
     <!-- INTRO -->
     <div id="screen-intro">
+      <a class="close-x" href="https://www.mooncatcrystals.com" aria-label="Close the quiz and go back to the shop">&times;</a>
       <h1>Find Your Crystal</h1>
       <p>New to crystals, or just not sure where to start? Answer a few honest questions and we'll match you with the crystal that actually fits where you are right now, and exactly how to work with it.</p>
       <button class="btn" id="start-btn">Start the Quiz</button>
