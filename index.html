@@ -110,6 +110,8 @@
   .option:hover { border-color: var(--pink); }
   .option.selected { border-color: var(--purple); background: #f6eefb; }
   .option:disabled { cursor: default; }
+  .back-btn { display: inline-block; margin-top: 18px; padding: 4px 0; font-size: 13.5px; color: var(--text-soft); text-decoration: underline; cursor: pointer; background: none; border: none; font-family: inherit; }
+  .back-btn:hover { color: var(--cream-text); }
 
   /* Swatch-style options (color question) */
   .options.swatch-grid {
@@ -313,6 +315,7 @@
       <div class="q-label" id="q-label"></div>
       <div class="q-title" id="q-title"></div>
       <div class="options" id="q-options"></div>
+      <button type="button" class="back-btn" id="back-btn">&larr; Back</button>
     </div>
 
     <!-- LOADING (brief transition while live products load — no email required) -->
@@ -672,7 +675,7 @@
   // ---------------------------------------------------------------
   // State + navigation
   // ---------------------------------------------------------------
-  var state = { qIndex: 0, scores: {}, resultKey: null, meta: {}, group: null, decider: null, picks: [] };
+  var state = { qIndex: 0, scores: {}, resultKey: null, meta: {}, group: null, decider: null, picks: [], answers: [], busy: false };
   Object.keys(CRYSTALS).forEach(function (k) { state.scores[k] = 0; });
 
   var TOTAL_STEPS = QUESTIONS.length + META_QUESTIONS.length;
@@ -727,6 +730,7 @@
         var btn = document.createElement("button");
         btn.type = "button";
         btn.className = q.layout === "swatch" ? "option swatch" : "option";
+        if (state.answers[state.qIndex] === opt) btn.classList.add("selected");
         if (q.layout === "swatch") {
           var dot = document.createElement("span");
           dot.className = "swatch-dot";
@@ -750,6 +754,7 @@
         var btn = document.createElement("button");
         btn.type = "button";
         btn.className = "option";
+        if (state.meta[metaQ.field] === opt.value) btn.classList.add("selected");
         btn.textContent = opt.text;
         btn.addEventListener("click", function () { handleMetaAnswer(metaQ, opt, btn); });
         optionsEl.appendChild(btn);
@@ -760,13 +765,29 @@
   // An option belongs to the chosen group if every crystal it scores is
   // in that group. Before question 1 is answered there's no group yet.
   function inGroup(opt) {
-    if (!state.group) return true;
+    if (!state.group || opt.group) return true;
     return Object.keys(opt.points).every(function (k) { return GROUPS[state.group].indexOf(k) !== -1; });
   }
 
+  function lockOptions(btnEl) {
+    state.busy = true;
+    Array.prototype.forEach.call(document.getElementById("q-options").children, function (b) {
+      b.classList.toggle("selected", b === btnEl);
+      b.disabled = true;
+    });
+  }
+
   function handleAnswer(opt, btnEl) {
-    btnEl.classList.add("selected");
-    Array.prototype.forEach.call(document.getElementById("q-options").children, function (b) { b.disabled = true; });
+    lockOptions(btnEl);
+
+    // Changing an earlier answer (after going Back): take its points off first.
+    var prev = state.answers[state.qIndex];
+    if (prev) {
+      Object.keys(prev.points).forEach(function (crystalKey) {
+        state.scores[crystalKey] -= prev.points[crystalKey];
+      });
+    }
+    state.answers[state.qIndex] = opt;
 
     Object.keys(opt.points).forEach(function (crystalKey) {
       state.scores[crystalKey] += opt.points[crystalKey];
@@ -781,18 +802,19 @@
       fadeSwap(function () {
         state.qIndex += 1;
         renderQuestion();
+        state.busy = false;
       });
     }, 250);
   }
 
   function handleMetaAnswer(metaQ, opt, btnEl) {
-    btnEl.classList.add("selected");
-    Array.prototype.forEach.call(document.getElementById("q-options").children, function (b) { b.disabled = true; });
+    lockOptions(btnEl);
     state.meta[metaQ.field] = opt.value;
 
     setTimeout(function () {
       fadeSwap(function () {
         state.qIndex += 1;
+        state.busy = false;
         if (state.qIndex < TOTAL_STEPS) {
           renderQuestion();
         } else {
@@ -802,6 +824,22 @@
       });
     }, 250);
   }
+
+  // Back steps one question (or from question 1 to the intro). The earlier
+  // answer stays highlighted; picking again swaps its points out in handleAnswer.
+  document.getElementById("back-btn").addEventListener("click", function () {
+    if (state.busy) return;
+    state.busy = true;
+    fadeSwap(function () {
+      if (state.qIndex === 0) {
+        showScreen("intro");
+      } else {
+        state.qIndex -= 1;
+        renderQuestion();
+      }
+      state.busy = false;
+    });
+  });
 
   // Highest score within the chosen group wins. On a tie, the
   // "need most" answer decides, then TIE_BREAK_ORDER.
@@ -995,6 +1033,7 @@
       state.group = null;
       state.decider = null;
       state.picks = [];
+      state.answers = [];
       Object.keys(CRYSTALS).forEach(function (k) { state.scores[k] = 0; });
 
       document.getElementById("save-form").reset();
